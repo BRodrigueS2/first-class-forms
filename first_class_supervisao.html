@@ -153,7 +153,54 @@
       .ai-grid { grid-template-columns: 1fr; }
       .actions { flex-direction: column; }
       .btn-primary, .btn-secondary { width: 100%; text-align: center; }
-      .cl-table td:nth-child(3), .cl-table th:nth-child(3) { display: none; }
+
+      /* Converte tabela em cards no mobile */
+      .table-wrap { overflow-x: visible; }
+      .cl-table { min-width: unset; }
+      .cl-table thead tr { display: none; }
+      .cl-table tbody tr {
+        display: flex;
+        flex-direction: column;
+        padding: 10px 8px;
+        border-bottom: 1px solid #eee;
+        position: relative;
+      }
+      .cl-table td {
+        display: block;
+        border: none;
+        padding: 2px 0;
+      }
+      /* Nome do item */
+      .cl-table td:first-child {
+        font-size: 13px;
+        font-weight: 600;
+        padding-right: 28px;
+        padding-bottom: 6px;
+      }
+      /* Botões de status */
+      .cl-table td:nth-child(2) {
+        text-align: left !important;
+      }
+      /* Campo de observação – visível no mobile */
+      .cl-table td:nth-child(3) {
+        display: block !important;
+        padding-top: 4px;
+      }
+      /* Botão deletar – canto superior direito */
+      .cl-table td:nth-child(4) {
+        position: absolute;
+        top: 10px;
+        right: 4px;
+        padding: 0;
+      }
+      /* Botões OK/Não OK/N/A em linha única */
+      .sg { flex-wrap: nowrap; justify-content: flex-start; }
+      .sg label { padding: 5px 10px; font-size: 12px; }
+      .obs { width: 100%; }
+
+      /* Linha de add-item */
+      .cl-table tfoot tr { display: block; }
+      .cl-table tfoot td { display: block; border: none; }
     }
 
     @media print {
