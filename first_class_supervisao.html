@@ -336,6 +336,36 @@
     display: none;
     letter-spacing: 0.3px;
   }
+
+  /* ── CONFIGURAÇÕES ───────────────────────────── */
+  .config-toggle {
+    background: none;
+    border: 1px solid rgba(255,255,255,.25);
+    color: rgba(255,255,255,.8);
+    font-size: 12px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    cursor: pointer;
+    float: right;
+    margin-top: -2px;
+  }
+  .config-toggle:hover { background: rgba(255,255,255,.1); }
+  #config-body { display:none; padding: 14px 16px 6px; }
+  #config-body.open { display:block; }
+  .config-row { display:flex; gap:8px; align-items:center; margin-bottom:10px; flex-wrap:wrap; }
+  .config-row label { font-size:12px; color:#555; min-width:80px; font-weight:600; }
+  .config-row input {
+    flex:1; min-width:200px; border:1px solid #ddd; border-radius:8px;
+    padding:8px 12px; font-size:13px; font-family:monospace; background:#fafafa;
+  }
+  .config-row input:focus { outline:none; border-color:#c9a84c; }
+  .config-save-btn {
+    background:#1a1a2e; color:#c9a84c; border:none; border-radius:8px;
+    padding:8px 16px; font-size:13px; font-weight:700; cursor:pointer;
+  }
+  .config-save-btn:hover { background:#2d2d4e; }
+  .config-hint { font-size:11px; color:#888; margin-top:2px; line-height:1.4; }
+  .config-status { font-size:12px; font-weight:700; margin-top:4px; }
 </style>
 </head>
 <body>
@@ -597,6 +627,28 @@
         <button id="btn-limpar-fotos" onclick="limparFotos()" style="display:none;background:none;border:none;color:#c62828;font-size:13px;cursor:pointer;font-weight:700;">✕ Limpar fotos</button>
       </div>
       <div id="foto-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:8px;"></div>
+    </div>
+  </div>
+
+  <!-- CONFIGURAÇÕES IA -->
+  <div class="card" id="config-card">
+    <div class="card-header">
+      <span class="icon">⚙️</span> Configurações
+      <button class="config-toggle" onclick="toggleConfig()">▼ Mostrar</button>
+    </div>
+    <div id="config-body">
+      <div class="config-row">
+        <label>🔑 Chave Groq</label>
+        <input type="password" id="groq-key-input" placeholder="gsk_xxxxxxxxxxxxxxxxxxxx" autocomplete="off" />
+      </div>
+      <div class="config-hint">
+        Chave gratuita em <strong>console.groq.com</strong> → "Create API Key" (sem cartão de crédito)<br>
+        Modelo: <strong>llama-3.3-70b-versatile</strong> · 1.000 req/dia gratuitas
+      </div>
+      <div style="margin-top:10px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+        <button class="config-save-btn" onclick="salvarChaveGroq()">💾 Salvar Chave</button>
+        <span class="config-status" id="config-status"></span>
+      </div>
     </div>
   </div>
 
@@ -948,8 +1000,12 @@ function enviarEmail() {
   window.location.href = 'mailto:' + encodeURIComponent(to) + '?subject=' + subject + ccPart + '&body=' + body;
 }
 
-// ── RELATÓRIO COM IA (GEMINI) ─────────────────────────
-var GEMINI_KEY = 'AIzaSyAHOW7Y6IrGZLEVegtvq2puK3KdwNSohBA';
+// ── RELATÓRIO COM IA (GROQ) ──────────────────────────
+// Chave padrão vazia — configure nas Configurações do app ou salve em localStorage
+var GROQ_KEY_DEFAULT = '';
+function getGroqKey() {
+  return localStorage.getItem('fc_groq_key') || GROQ_KEY_DEFAULT;
+}
 
 function coletarDados() {
   var loja = document.getElementById('loja').value || '(não informado)';
@@ -1042,10 +1098,21 @@ async function gerarRelatorioIA() {
     + 'Escreva em português do Brasil. Seja específico, prático e orientado a resultados.';
 
   try {
+    var groqKey = getGroqKey();
+    if (!groqKey) {
+      throw new Error('Chave de API não configurada. Toque em ⚙️ Configurações e cole sua chave Groq gratuita (console.groq.com).');
+    }
     var res = await fetch(
-      'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=' + GEMINI_KEY,
-      { method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({ contents:[{ parts:[{ text: prompt }] }], generationConfig:{ temperature:0.7, maxOutputTokens:2500 } }) }
+      'https://api.groq.com/openai/v1/chat/completions',
+      { method:'POST',
+        headers:{'Content-Type':'application/json', 'Authorization':'Bearer ' + groqKey},
+        body: JSON.stringify({
+          model: 'llama-3.3-70b-versatile',
+          messages:[{ role:'user', content: prompt }],
+          temperature: 0.7,
+          max_tokens: 2500
+        })
+      }
     );
     if (!res.ok) {
       var errBody = await res.json().catch(function(){ return {}; });
@@ -1053,7 +1120,7 @@ async function gerarRelatorioIA() {
       throw new Error(errMsg);
     }
     var json = await res.json();
-    var txt = json.candidates[0].content.parts[0].text;
+    var txt = json.choices[0].message.content;
     // Renderiza markdown básico
     txt = txt
       .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
@@ -1089,6 +1156,56 @@ function fmtBRL(v) {
   return v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
+
+
+// ── CONFIGURAÇÕES ────────────────────────────────────
+function toggleConfig() {
+  var body = document.getElementById('config-body');
+  var btn = document.querySelector('.config-toggle');
+  var open = body.classList.toggle('open');
+  btn.textContent = open ? '▲ Ocultar' : '▼ Mostrar';
+  if (open) {
+    var saved = localStorage.getItem('fc_groq_key') || '';
+    document.getElementById('groq-key-input').value = saved;
+    document.getElementById('config-status').textContent = saved ? '✅ Chave salva' : '';
+    document.getElementById('config-status').style.color = '#2e7d32';
+  }
+}
+
+function salvarChaveGroq() {
+  var key = document.getElementById('groq-key-input').value.trim();
+  var status = document.getElementById('config-status');
+  if (!key) {
+    status.textContent = '⚠️ Cole sua chave Groq acima';
+    status.style.color = '#c62828';
+    return;
+  }
+  if (!key.startsWith('gsk_')) {
+    status.textContent = '⚠️ Chave inválida (deve começar com gsk_)';
+    status.style.color = '#c62828';
+    return;
+  }
+  localStorage.setItem('fc_groq_key', key);
+  status.textContent = '✅ Chave salva com sucesso!';
+  status.style.color = '#2e7d32';
+  setTimeout(function(){
+    document.getElementById('config-body').classList.remove('open');
+    document.querySelector('.config-toggle').textContent = '▼ Mostrar';
+  }, 1500);
+}
+
+// Mostra indicador se chave já está salva
+window.addEventListener('DOMContentLoaded', function() {
+  if (localStorage.getItem('fc_groq_key')) {
+    var hdr = document.querySelector('#config-card .card-header');
+    if (hdr) {
+      var dot = document.createElement('span');
+      dot.style.cssText = 'display:inline-block;width:8px;height:8px;background:#4caf50;border-radius:50%;margin-left:6px;vertical-align:middle;';
+      dot.title = 'Chave Groq configurada';
+      hdr.insertBefore(dot, hdr.querySelector('.config-toggle'));
+    }
+  }
+});
 
 // ── ANÁLISE INTERNA AUTO ──────────────────────────────
 function getChkStatus(id) {
