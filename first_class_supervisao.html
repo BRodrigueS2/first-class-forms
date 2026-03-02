@@ -274,6 +274,33 @@
     }
     @keyframes spin { to { transform: rotate(360deg); } }
 
+
+    /* ── Metas ──────────────────────────────────────────── */
+    .meta-header { display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:16px; }
+    .meta-label  { font-size:12px; font-weight:700; color:#555; text-transform:uppercase; letter-spacing:.5px; white-space:nowrap; }
+    .meta-input  { border:1px solid var(--border); border-radius:6px; padding:8px 10px; font-size:14px; background:#fafafa; font-family:inherit; }
+    .meta-input:focus { outline:2px solid var(--fc-gold); background:#fff; }
+    .meta-total-in { width:160px; }
+    .meta-table  { width:100%; border-collapse:collapse; font-size:13px; }
+    .meta-table th { font-size:11px; text-transform:uppercase; letter-spacing:.4px; color:#888; font-weight:700; padding:8px 10px; border-bottom:2px solid #eee; text-align:center; }
+    .meta-table th:first-child { text-align:left; }
+    .meta-table td { padding:10px 8px; border-bottom:1px solid #f0f0f0; text-align:center; vertical-align:middle; }
+    .meta-table tr:last-child td { border-bottom:none; }
+    .meta-table td:first-child { text-align:left; font-weight:700; font-size:13px; }
+    .meta-pct-in { width:64px; border:1px solid #ddd; border-radius:6px; padding:6px 6px; font-size:13px; text-align:center; }
+    .meta-real-in { width:100px; border:1px solid #ddd; border-radius:6px; padding:6px 8px; font-size:13px; text-align:center; }
+    .meta-val    { font-weight:700; color:#1a1a2e; font-size:13px; }
+    .meta-st-ok  { background:#e8f5e9; color:#2e7d32; font-weight:700; border-radius:20px; padding:4px 12px; display:inline-block; font-size:12px; }
+    .meta-st-no  { background:#ffebee; color:#c62828; font-weight:700; border-radius:20px; padding:4px 12px; display:inline-block; font-size:12px; }
+    .meta-st-nd  { color:#aaa; font-size:12px; }
+    .meta-score-bar { margin-top:14px; padding:12px 14px; border-radius:8px; background:#f7f4ee; border:1px solid #e0d9c8; display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+    .meta-score-num { font-size:22px; font-weight:900; }
+    .meta-score-lbl { font-size:13px; color:#555; }
+    @media (max-width:600px) {
+      .meta-table th:nth-child(3), .meta-table td:nth-child(3) { display:none; }
+      .meta-real-in { width:80px; }
+      .meta-total-in { width:130px; }
+    }
     @media print {
       header, #score-bar { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
       #btn-print, .add-row, .del-btn, .actions, .rcl-btn, #email-section, .btn-foto, #btn-limpar-fotos, .foto-del { display: none !important; }
@@ -417,9 +444,9 @@
     </div>
   </div>
 
-  <!-- DADOS & CRM -->
+  <!-- CRM -->
   <div class="card">
-    <div class="card-header"><span class="icon">📊</span> Dados &amp; CRM <span class="cat-score" id="cs-dados">– / –</span></div>
+    <div class="card-header"><span class="icon">📊</span> CRM <span class="cat-score" id="cs-dados">– / –</span></div>
     <div class="card-body" style="padding:0 0 4px;">
       <div class="table-wrap">
       <table class="cl-table">
@@ -427,11 +454,76 @@
         <tbody id="tbody-dados">
           <tr data-id="d1" data-cat="dados" data-sp="negativos"><td>Negativos (qtd.)</td><td style="text-align:center"><input class="neg-in" type="number" placeholder="0" id="neg-val" oninput="score()"></td><td><textarea class="obs" placeholder="Observação…"></textarea></td><td><button class="del-btn" onclick="del(this)">✕</button></td></tr>
           <tr data-id="d2" data-cat="dados" data-sp="cadastro"><td>Cadastro – Associação / E-mail / Celular</td><td style="text-align:center"><div class="cad-row"><span>Assoc.:</span><input class="num-in" type="number" min="0" max="100" placeholder="%" id="cad-a" oninput="score()"><span>Email:</span><input class="num-in" type="number" min="0" max="100" placeholder="%" id="cad-e" oninput="score()"><span>Cel.:</span><input class="num-in" type="number" min="0" max="100" placeholder="%" id="cad-c" oninput="score()"></div></td><td><textarea class="obs" placeholder="Observação…"></textarea></td><td><button class="del-btn" onclick="del(this)">✕</button></td></tr>
-          <tr data-id="d3" data-cat="dados" data-sp="metas"><td>Metas da Dezena</td><td style="text-align:center"><span style="font-size:11px;color:#888;font-style:italic">Ver obs. →</span></td><td><textarea class="obs" placeholder="Quem bateu / quem está próximo / quem não bateu" style="height:48px"></textarea></td><td><button class="del-btn" onclick="del(this)">✕</button></td></tr>
+          <tr data-id="d4" data-cat="dados"><td>CRM atualizado / Histórico de compras</td><td style="text-align:center"><div class="sg"><input type="radio" name="st_d4" id="ok_d4" value="ok" onchange="score()"><label for="ok_d4">OK</label><input type="radio" name="st_d4" id="no_d4" value="notok" onchange="score()"><label for="no_d4">Não OK</label><input type="radio" name="st_d4" id="na_d4" value="na" onchange="score()"><label for="na_d4">N/A</label></div></td><td><textarea class="obs" placeholder="Observação…"></textarea></td><td><button class="del-btn" onclick="del(this)">✕</button></td></tr>
+          <tr data-id="d5" data-cat="dados"><td>Régua de relacionamento ativa</td><td style="text-align:center"><div class="sg"><input type="radio" name="st_d5" id="ok_d5" value="ok" onchange="score()"><label for="ok_d5">OK</label><input type="radio" name="st_d5" id="no_d5" value="notok" onchange="score()"><label for="no_d5">Não OK</label><input type="radio" name="st_d5" id="na_d5" value="na" onchange="score()"><label for="na_d5">N/A</label></div></td><td><textarea class="obs" placeholder="Observação…"></textarea></td><td><button class="del-btn" onclick="del(this)">✕</button></td></tr>
         </tbody>
         <tfoot><tr class="add-row"><td colspan="4"><button class="btn-add" data-cat="dados">+ Adicionar item</button></td></tr></tfoot>
       </table>
       </div>
+    </div>
+  </div>
+
+  <!-- DADOS & METAS -->
+  <div class="card">
+    <div class="card-header"><span class="icon">📈</span> Dados &amp; Metas <span class="cat-score" id="cs-metas" style="background:rgba(255,255,255,.15)">– / 3</span></div>
+    <div class="card-body">
+
+      <!-- Meta total -->
+      <div class="meta-header">
+        <span class="meta-label">Meta do Mês:</span>
+        <div style="display:flex;align-items:center;gap:6px;">
+          <span style="font-size:14px;font-weight:700;color:#555;">R$</span>
+          <input id="meta-total" class="meta-input meta-total-in" type="number" min="0" placeholder="0,00" step="0.01" oninput="calcMetas()" />
+        </div>
+      </div>
+
+      <!-- Tabela de dezenas -->
+      <div class="table-wrap">
+      <table class="meta-table">
+        <thead>
+          <tr>
+            <th style="width:22%">Dezena</th>
+            <th style="width:16%">% da Meta</th>
+            <th style="width:22%">Meta (R$)</th>
+            <th style="width:22%">Realizado (R$)</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>🥇 1ª Dezena<br/><small style="font-weight:400;color:#888;">dias 01 – 10</small></td>
+            <td><input id="pct-d1" class="meta-pct-in" type="number" min="0" max="100" placeholder="%" oninput="calcMetas()" /></td>
+            <td><span id="val-d1" class="meta-val">–</span></td>
+            <td><input id="real-d1" class="meta-real-in" type="number" min="0" placeholder="0,00" step="0.01" oninput="calcMetas()" /></td>
+            <td id="st-d1"><span class="meta-st-nd">–</span></td>
+          </tr>
+          <tr>
+            <td>🥈 2ª Dezena<br/><small style="font-weight:400;color:#888;">dias 11 – 20</small></td>
+            <td><input id="pct-d2" class="meta-pct-in" type="number" min="0" max="100" placeholder="%" oninput="calcMetas()" /></td>
+            <td><span id="val-d2" class="meta-val">–</span></td>
+            <td><input id="real-d2" class="meta-real-in" type="number" min="0" placeholder="0,00" step="0.01" oninput="calcMetas()" /></td>
+            <td id="st-d2"><span class="meta-st-nd">–</span></td>
+          </tr>
+          <tr>
+            <td>🥉 3ª Dezena<br/><small style="font-weight:400;color:#888;">dias 21 – 30/31</small></td>
+            <td><input id="pct-d3" class="meta-pct-in" type="number" min="0" max="100" placeholder="%" oninput="calcMetas()" /></td>
+            <td><span id="val-d3" class="meta-val">–</span></td>
+            <td><input id="real-d3" class="meta-real-in" type="number" min="0" placeholder="0,00" step="0.01" oninput="calcMetas()" /></td>
+            <td id="st-d3"><span class="meta-st-nd">–</span></td>
+          </tr>
+        </tbody>
+      </table>
+      </div>
+
+      <!-- Score de metas -->
+      <div class="meta-score-bar">
+        <span class="meta-score-num" id="meta-score-num" style="color:#aaa;">–</span>
+        <div>
+          <div class="meta-score-lbl" id="meta-score-lbl">Preencha a meta e os valores realizados</div>
+          <div style="font-size:11px;color:#aaa;margin-top:2px;" id="meta-score-total">–</div>
+        </div>
+      </div>
+
     </div>
   </div>
 
@@ -698,6 +790,33 @@ function gerarRelatorio() {
     s += '</table></div>';
   }
 
+  // ── Metas por Dezena ──
+  var metaTotal = parseFloat(document.getElementById('meta-total').value) || 0;
+  var dNames = ['1ª Dezena (01-10)','2ª Dezena (11-20)','3ª Dezena (21-30/31)'];
+  var dIds   = ['d1','d2','d3'];
+  s += '<div style="background:#fff;margin:0;">';
+  s += '<table style="width:100%;border-collapse:collapse;">';
+  s += '<tr style="background:#1a1a2e;"><td style="padding:10px 16px;color:#fff;font-size:12px;font-weight:bold;font-family:Verdana,Arial,sans-serif;">📈 DADOS &amp; METAS';
+  if (metaTotal > 0) s += ' — Meta do Mês: R$ ' + fmtBRL(metaTotal);
+  s += '</td><td style="padding:10px 16px;color:#c9a84c;font-size:12px;text-align:right;font-family:Verdana,Arial,sans-serif;">Score: ' + document.getElementById('cs-metas').textContent + '</td></tr>';
+  s += '<tr style="background:#f9f7f2;"><th style="padding:8px 14px;font-size:11px;color:#888;text-align:left;font-family:Verdana,Arial,sans-serif;">Dezena</th><th style="padding:8px 14px;font-size:11px;color:#888;text-align:center;font-family:Verdana,Arial,sans-serif;">Meta (R$)</th><th style="padding:8px 14px;font-size:11px;color:#888;text-align:center;font-family:Verdana,Arial,sans-serif;">Realizado (R$)</th><th style="padding:8px 14px;font-size:11px;color:#888;text-align:center;font-family:Verdana,Arial,sans-serif;">Status</th></tr>';
+  for (var dz = 0; dz < 3; dz++) {
+    var dzId   = dIds[dz];
+    var dzPct  = parseFloat(document.getElementById('pct-' + dzId).value) || 0;
+    var dzReal = parseFloat(document.getElementById('real-' + dzId).value);
+    var dzMeta = metaTotal > 0 && dzPct > 0 ? (metaTotal * dzPct / 100) : 0;
+    var dzValTxt = dzMeta > 0 ? 'R$ ' + fmtBRL(dzMeta) : '–';
+    var dzRealTxt = !isNaN(dzReal) && dzMeta > 0 ? 'R$ ' + fmtBRL(dzReal) : '–';
+    var dzStHtml = '<span style="color:#aaa;">–</span>';
+    if (dzMeta > 0 && !isNaN(dzReal)) {
+      if (dzReal >= dzMeta) dzStHtml = '<span style="color:#2e7d32;font-weight:bold;">✔ Bateu</span>';
+      else dzStHtml = '<span style="color:#c62828;font-weight:bold;">✘ ' + Math.round(dzReal/dzMeta*100) + '%</span>';
+    }
+    var dzBg = dz % 2 === 0 ? '#fff' : '#f9f7f2';
+    s += '<tr style="background:' + dzBg + ';"><td style="padding:9px 14px;font-size:12px;font-family:Verdana,Arial,sans-serif;font-weight:bold;">' + dNames[dz] + '</td><td style="padding:9px 14px;font-size:12px;text-align:center;font-family:Verdana,Arial,sans-serif;">' + dzValTxt + '</td><td style="padding:9px 14px;font-size:12px;text-align:center;font-family:Verdana,Arial,sans-serif;">' + dzRealTxt + '</td><td style="padding:9px 14px;font-size:12px;text-align:center;font-family:Verdana,Arial,sans-serif;">' + dzStHtml + '</td></tr>';
+  }
+  s += '</table></div>';
+
   // ── Análise Interna ──
   s += '<div style="background:#fff;margin:0;">';
   s += '<table style="width:100%;border-collapse:collapse;">';
@@ -806,7 +925,7 @@ function coletarDados() {
   var sup = document.getElementById('supervisor').value || '(não informado)';
   var resp = document.getElementById('responsavel').value || '(não informado)';
   var scoreGeral = document.getElementById('score-display').textContent;
-  var catNames = { visual:'Visual & Comunicação', oper:'Operacional & Estrutura', equipe:'Equipe & Padrão', dados:'Dados & CRM' };
+  var catNames = { visual:'Visual & Comunicação', oper:'Operacional & Estrutura', equipe:'Equipe & Padrão', dados:'CRM' };
   var catScoreIds = { visual:'cs-visual', oper:'cs-oper', equipe:'cs-equipe', dados:'cs-dados' };
   var cats = Object.keys(catNames);
   var blocos = [];
@@ -929,6 +1048,75 @@ function copiarAIRelatorio(btn) {
     document.body.appendChild(ta); ta.focus(); ta.select();
     try { document.execCommand('copy'); btn.textContent='✔ Copiado!'; } catch(e){ btn.textContent='Erro'; }
     document.body.removeChild(ta); setTimeout(function(){ btn.textContent='📋 Copiar'; },2000);
+  }
+}
+
+// ── METAS POR DEZENA ──────────────────────────────────
+function fmtBRL(v) {
+  return v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+function calcMetas() {
+  var total = parseFloat(document.getElementById('meta-total').value) || 0;
+  var dezenas = ['d1','d2','d3'];
+  var batidas = 0, preenchidas = 0;
+  var totalRealizado = 0;
+
+  for (var i = 0; i < dezenas.length; i++) {
+    var d = dezenas[i];
+    var pct   = parseFloat(document.getElementById('pct-' + d).value) || 0;
+    var real  = parseFloat(document.getElementById('real-' + d).value);
+    var valEl = document.getElementById('val-' + d);
+    var stEl  = document.getElementById('st-' + d);
+
+    var metaD = total > 0 && pct > 0 ? (total * pct / 100) : 0;
+    valEl.textContent = metaD > 0 ? 'R$ ' + fmtBRL(metaD) : '–';
+
+    if (metaD > 0 && !isNaN(real)) {
+      preenchidas++;
+      totalRealizado += real;
+      if (real >= metaD) {
+        batidas++;
+        stEl.innerHTML = '<span class="meta-st-ok">✔ Bateu</span>';
+      } else {
+        var pctReal = Math.round(real / metaD * 100);
+        stEl.innerHTML = '<span class="meta-st-no">✘ ' + pctReal + '%</span>';
+      }
+    } else {
+      stEl.innerHTML = '<span class="meta-st-nd">–</span>';
+    }
+  }
+
+  // Score bar
+  var numEl = document.getElementById('meta-score-num');
+  var lblEl = document.getElementById('meta-score-lbl');
+  var totEl = document.getElementById('meta-score-total');
+  var csEl  = document.getElementById('cs-metas');
+
+  if (preenchidas > 0) {
+    var pctBat = Math.round(batidas / 3 * 100);
+    numEl.textContent = batidas + '/3';
+    numEl.style.color = batidas === 3 ? '#2e7d32' : batidas >= 2 ? '#ff8f00' : '#c62828';
+    lblEl.textContent = batidas === 3 ? '✅ Todas as dezenas batidas!' :
+                        batidas === 2 ? '⚠️ 2 de 3 dezenas batidas' :
+                        batidas === 1 ? '⚠️ 1 de 3 dezenas batidas' :
+                                        '❌ Nenhuma dezena batida';
+    if (total > 0) {
+      var pctGeral = Math.round(totalRealizado / total * 100);
+      totEl.textContent = 'Realizado total: R$ ' + fmtBRL(totalRealizado) + ' de R$ ' + fmtBRL(total) + ' (' + pctGeral + '% da meta)';
+    } else {
+      totEl.textContent = '';
+    }
+    // Atualizar cat-score da barra de metas
+    csEl.textContent = batidas + ' / 3';
+    csEl.style.background = batidas === 3 ? 'rgba(46,125,50,.6)' : batidas >= 2 ? 'rgba(255,143,0,.7)' : 'rgba(198,40,40,.6)';
+  } else {
+    numEl.textContent = '–';
+    numEl.style.color = '#aaa';
+    lblEl.textContent = 'Preencha a meta e os valores realizados';
+    totEl.textContent = '–';
+    csEl.textContent = '– / 3';
+    csEl.style.background = 'rgba(255,255,255,.15)';
   }
 }
 
