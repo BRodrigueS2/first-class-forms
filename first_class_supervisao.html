@@ -721,9 +721,12 @@ async function gerarRelatorioIA() {
   setTimeout(function(){ sec.scrollIntoView({ behavior:'smooth', block:'start' }); }, 80);
 
   var d = coletarDados();
-  var prompt = 'Você é um consultor especialista em gestão de lojas de varejo de cama, mesa e banho. '
-    + 'Com base nos dados de uma visita de supervisão de campo da rede First Class, '
-    + 'redija um relatório profissional, completo e em português do Brasil.\n\n'
+  var prompt = 'Você é um consultor sênior de varejo especializado em gestão de lojas de cama, mesa e banho, '
+    + 'com foco em desenvolvimento de equipes e melhoria operacional. '
+    + 'Você acabou de realizar uma visita de supervisão de campo em uma loja da rede First Class '
+    + 'e precisa produzir um relatório ORIENTATIVO e RESOLUTIVO — ou seja, para cada problema encontrado '
+    + 'você deve indicar EXATAMENTE O QUE PRECISA SER FEITO e COMO FAZER, com passos práticos e objetivos. '
+    + 'O tom deve ser construtivo, direto e motivador, como um mentor falando com o gestor da loja.\n\n'
     + '### DADOS DA VISITA\n'
     + 'Loja: ' + d.loja + '\n'
     + 'Data: ' + d.data + '\n'
@@ -732,15 +735,27 @@ async function gerarRelatorioIA() {
     + 'Score Geral: ' + d.scoreGeral + '\n\n'
     + d.blocos.join('\n\n')
     + (d.relato ? '\n\n### RELATO DO SUPERVISOR\n' + d.relato : '')
-    + '\n\n### ESTRUTURA DO RELATÓRIO\n'
-    + 'Produza um relatório com as seguintes seções usando markdown:\n'
-    + '1. **Resumo Executivo** – visão geral em 2-3 parágrafos, incluindo o score e o contexto da visita\n'
-    + '2. **Pontos de Destaque** – o que a loja está fazendo bem, com elogios específicos\n'
-    + '3. **Pontos de Atenção** – itens Não OK com análise do impacto no negócio\n'
-    + '4. **Análise por Categoria** – breve análise de Visual, Operacional, Equipe e Dados\n'
-    + '5. **Plano de Ação** – lista priorizada: ação | responsável sugerido | prazo sugerido\n'
-    + '6. **Considerações Finais** – mensagem motivacional e próximos passos para o gestor\n\n'
-    + 'Use linguagem profissional, direta e construtiva. Seja específico com os dados fornecidos.';
+    + '\n\n### INSTRUÇÕES PARA O RELATÓRIO\n'
+    + 'Produza um relatório com as seguintes seções em markdown. '
+    + 'REGRA PRINCIPAL: para cada item "Não OK", você OBRIGATORIAMENTE deve descrever (a) o impacto desse problema na loja/cliente, '
+    + '(b) o passo a passo de como resolver, (c) quem deve resolver e em quanto tempo.\n\n'
+    + '**1. Panorama da Visita**\n'
+    + 'Resumo executivo em 2 parágrafos: contexto geral, score obtido e o que ele representa para a loja.\n\n'
+    + '**2. Pontos Positivos**\n'
+    + 'Liste os itens OK destacando o que a loja faz bem e reforce esses comportamentos com elogios específicos.\n\n'
+    + '**3. Problemas Identificados e Como Resolver**\n'
+    + 'Para cada item marcado como "Não OK", crie um bloco com:\n'
+    + '- **Problema:** nome do item e observação registrada\n'
+    + '- **Impacto:** o que esse problema causa na experiência do cliente ou no resultado da loja\n'
+    + '- **Como resolver:** passo a passo prático e objetivo (mínimo 2, máximo 5 passos)\n'
+    + '- **Responsável:** quem deve executar (gerente, equipe, supervisor, fornecedor)\n'
+    + '- **Prazo:** urgente (hoje/amanhã), curto prazo (até 7 dias) ou médio prazo (até 30 dias)\n\n'
+    + '**4. Plano de Ação Priorizado**\n'
+    + 'Tabela com: Prioridade | Item | Ação | Responsável | Prazo. Ordene do mais urgente ao menos urgente.\n\n'
+    + '**5. Mensagem Final ao Gestor**\n'
+    + 'Parágrafo motivacional e direto, reconhecendo os esforços e reforçando o compromisso com a melhoria. '
+    + 'Finalize com os 3 principais focos para a próxima visita.\n\n'
+    + 'Escreva em português do Brasil. Seja específico, prático e orientado a resultados.';
 
   try {
     var res = await fetch(
