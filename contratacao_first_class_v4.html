@@ -1,0 +1,2223 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Seleção & Período de Experiência — First Class Home</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<style>
+  :root {
+    --gold: #C9A84C;
+    --gold-light: #E8C86E;
+    --dark: #0E0E0E;
+    --dark2: #1A1A1A;
+    --dark3: #252525;
+    --text: #E8E0D0;
+    --text-muted: #8A7E6E;
+    --green: #7DC87D;
+    --blue: #7AABFF;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    background: var(--dark);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+  }
+  body::before {
+    content:'';
+    position:absolute;
+    inset:0;
+    background:
+      radial-gradient(ellipse 80% 50% at 15% 15%, rgba(201,168,76,0.07) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 40% at 85% 85%, rgba(201,168,76,0.04) 0%, transparent 50%);
+    pointer-events:none;
+    z-index:0;
+  }
+
+  .container { max-width:900px; margin:0 auto; padding:60px 24px; position:relative; z-index:1; }
+
+  /* TABS */
+  .tabs {
+    display:flex;
+    gap:4px;
+    background: var(--dark3);
+    border:1px solid rgba(255,255,255,0.07);
+    border-radius:12px;
+    padding:6px;
+    margin-bottom:40px;
+    animation: fadeUp 0.6s 0.2s ease both;
+  }
+  .tab {
+    flex:1;
+    padding:11px 8px;
+    border-radius:8px;
+    text-align:center;
+    font-size:13px;
+    font-weight:500;
+    cursor:pointer;
+    color:var(--text-muted);
+    transition:all 0.2s ease;
+    line-height:1.3;
+  }
+  .tab:hover { color:var(--text); }
+  .tab.active {
+    background: linear-gradient(135deg, rgba(201,168,76,0.2), rgba(201,168,76,0.1));
+    color: var(--gold-light);
+    border:1px solid rgba(201,168,76,0.25);
+  }
+
+  /* PANELS */
+  .panel { display:none; animation: fadeUp 0.4s ease both; }
+  .panel.active { display:block; }
+
+  /* Header */
+  .header { text-align:center; margin-bottom:52px; animation: fadeUp 0.8s ease both; }
+  .brand-tag {
+    display:inline-block;
+    font-size:11px; font-weight:600; letter-spacing:0.2em; text-transform:uppercase;
+    color:var(--gold); border:1px solid rgba(201,168,76,0.3);
+    padding:6px 16px; border-radius:2px; margin-bottom:20px;
+  }
+  h1 {
+    font-family:'Playfair Display',serif;
+    font-size:clamp(32px,5.5vw,52px);
+    font-weight:900; line-height:1.05; color:#fff; margin-bottom:12px;
+  }
+  h1 span { background:linear-gradient(135deg,var(--gold-light),var(--gold)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+  .subtitle { color:var(--text-muted); font-size:15px; font-weight:300; line-height:1.6; max-width:520px; margin:0 auto; }
+
+  /* Progress */
+  .progress-bar {
+    background:var(--dark3); border:1px solid rgba(201,168,76,0.15);
+    border-radius:12px; padding:18px 24px; margin-bottom:36px;
+    display:flex; align-items:center; gap:14px;
+  }
+  .progress-label { font-size:12px; color:var(--text-muted); white-space:nowrap; font-weight:500; letter-spacing:0.05em; }
+  .progress-track { flex:1; height:4px; background:rgba(255,255,255,0.06); border-radius:2px; overflow:hidden; }
+  .progress-fill { height:100%; background:linear-gradient(90deg,var(--gold),var(--gold-light)); border-radius:2px; width:0%; transition:width 0.5s ease; }
+  .progress-count { font-size:13px; font-weight:600; color:var(--gold); white-space:nowrap; }
+
+  /* Section title */
+  .section-title {
+    font-family:'Playfair Display',serif; font-size:12px; font-weight:700;
+    letter-spacing:0.15em; text-transform:uppercase; color:var(--gold);
+    margin-bottom:16px; margin-top:40px;
+    display:flex; align-items:center; gap:12px;
+  }
+  .section-title::after { content:''; flex:1; height:1px; background:rgba(201,168,76,0.2); }
+
+  /* Cards */
+  .card {
+    background:var(--dark2); border:1px solid rgba(255,255,255,0.06);
+    border-radius:12px; padding:24px 28px; margin-bottom:14px;
+    cursor:pointer; transition:all 0.25s ease; position:relative; overflow:hidden;
+  }
+  .card::before {
+    content:''; position:absolute; left:0; top:0; bottom:0; width:3px;
+    background:linear-gradient(180deg,var(--gold),var(--gold-light));
+    opacity:0; transition:opacity 0.25s ease;
+  }
+  .card:hover { border-color:rgba(201,168,76,0.22); transform:translateX(4px); }
+  .card:hover::before, .card.active::before { opacity:1; }
+  .card.active { border-color:rgba(201,168,76,0.32); background:#1F1C16; }
+  .card[style*="cursor:default"]:hover { transform:none; border-color:rgba(255,255,255,0.06); }
+  .card[style*="cursor:default"]::before { display:none; }
+
+  .card-header { display:flex; align-items:center; gap:14px; justify-content:space-between; }
+  .card-left { display:flex; align-items:center; gap:14px; flex:1; }
+  .card-icon {
+    width:42px; height:42px; border-radius:10px;
+    background:rgba(201,168,76,0.1); border:1px solid rgba(201,168,76,0.2);
+    display:flex; align-items:center; justify-content:center; font-size:19px; flex-shrink:0;
+  }
+  .card-title { font-family:'Playfair Display',serif; font-size:17px; font-weight:700; color:#fff; line-height:1.2; }
+  .card-badge { font-size:10px; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; padding:4px 10px; border-radius:20px; white-space:nowrap; }
+  .badge-high { background:rgba(201,168,76,0.15); color:var(--gold); border:1px solid rgba(201,168,76,0.3); }
+  .badge-med  { background:rgba(100,180,100,0.12); color:var(--green); border:1px solid rgba(100,180,100,0.25); }
+  .badge-quick{ background:rgba(100,150,255,0.12); color:var(--blue);  border:1px solid rgba(100,150,255,0.25); }
+  .badge-ret  { background:rgba(220,100,100,0.12); color:#F08080;      border:1px solid rgba(220,100,100,0.25); }
+  .chevron { color:var(--text-muted); font-size:13px; transition:transform 0.25s ease; margin-left:10px; }
+  .card.active .chevron { transform:rotate(180deg); color:var(--gold); }
+
+  .card-body { max-height:0; overflow:hidden; transition:max-height 0.5s ease, opacity 0.3s ease; opacity:0; }
+  .card.active .card-body { max-height:2000px; opacity:1; }
+  .card-body-inner { padding-top:18px; border-top:1px solid rgba(255,255,255,0.06); margin-top:18px; }
+
+  .card-desc { color:var(--text-muted); font-size:14px; line-height:1.7; margin-bottom:14px; }
+
+  .steps { list-style:none; display:flex; flex-direction:column; gap:10px; }
+  .step { display:flex; gap:12px; align-items:flex-start; }
+  .step-num {
+    width:24px; height:24px; border-radius:50%;
+    background:rgba(201,168,76,0.15); border:1px solid rgba(201,168,76,0.3);
+    color:var(--gold); font-size:11px; font-weight:700;
+    display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;
+  }
+  .step-text { font-size:14px; color:var(--text); line-height:1.5; }
+  .step-text strong { color:var(--gold-light); font-weight:600; }
+  .step-text em { color:var(--text-muted); font-style:italic; }
+
+  /* Perguntas */
+  .perguntas { display:flex; flex-direction:column; gap:8px; }
+  .pergunta {
+    background:rgba(255,255,255,0.03); border-radius:8px;
+    padding:12px 16px; font-size:14px; color:var(--text); line-height:1.5;
+    border-left:2px solid rgba(201,168,76,0.3);
+  }
+  .pergunta em { color:var(--text-muted); font-size:12px; display:block; margin-top:4px; }
+
+  /* Template */
+  .template-box {
+    background:var(--dark3); border:1px solid rgba(201,168,76,0.2);
+    border-radius:10px; padding:20px 24px; margin-top:14px;
+    font-size:13px; line-height:1.85; color:var(--text); white-space:pre-line;
+    position:relative;
+  }
+  .copy-btn {
+    position:absolute; top:12px; right:12px;
+    background:rgba(201,168,76,0.15); border:1px solid rgba(201,168,76,0.3);
+    color:var(--gold); font-size:11px; font-weight:600; letter-spacing:0.08em;
+    padding:5px 12px; border-radius:4px; cursor:pointer; transition:all 0.2s ease;
+    font-family:'DM Sans',sans-serif;
+  }
+  .copy-btn:hover { background:rgba(201,168,76,0.25); }
+
+  /* Checklist */
+  .checklist { list-style:none; display:flex; flex-direction:column; gap:9px; }
+  .checklist-item {
+    display:flex; align-items:flex-start; gap:12px;
+    padding:12px 16px; border-radius:8px;
+    background:rgba(255,255,255,0.03); cursor:pointer;
+    transition:all 0.2s ease; user-select:none;
+  }
+  .checklist-item:hover { background:rgba(201,168,76,0.05); }
+  .checklist-item.checked { background:rgba(201,168,76,0.08); }
+  .check-box {
+    width:20px; height:20px; border-radius:4px;
+    border:1.5px solid rgba(201,168,76,0.35);
+    display:flex; align-items:center; justify-content:center;
+    flex-shrink:0; transition:all 0.2s ease; font-size:11px; margin-top:1px;
+  }
+  .checklist-item.checked .check-box { background:var(--gold); border-color:var(--gold); color:var(--dark); }
+  .check-text { font-size:14px; line-height:1.5; color:var(--text); }
+  .checklist-item.checked .check-text { text-decoration:line-through; color:var(--text-muted); }
+  .check-sub { font-size:12px; color:var(--text-muted); display:block; margin-top:2px; }
+
+  /* Alert box */
+  .alert {
+    background:rgba(240,128,128,0.08); border:1px solid rgba(240,128,128,0.2);
+    border-radius:10px; padding:16px 20px; margin-bottom:20px;
+    font-size:13px; color:#F08080; line-height:1.6;
+  }
+  .alert strong { color:#FFB3B3; }
+
+  /* Info box */
+  .info-box {
+    background:rgba(201,168,76,0.07); border:1px solid rgba(201,168,76,0.2);
+    border-radius:10px; padding:16px 20px; margin-top:14px;
+    font-size:13px; color:var(--gold-light); line-height:1.6;
+  }
+  .info-box strong { color:var(--gold); }
+
+  /* Score grid */
+  .score-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:12px; }
+  .score-item {
+    background:rgba(255,255,255,0.03); border-radius:8px; padding:14px 16px;
+    display:flex; align-items:center; gap:10px;
+    border:1px solid rgba(255,255,255,0.05);
+  }
+  .score-dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
+  .dot-gold { background:var(--gold); }
+  .dot-green { background:var(--green); }
+  .dot-red { background:#F08080; }
+
+  /* Footer */
+  .footer {
+    text-align:center; margin-top:56px; padding-top:28px;
+    border-top:1px solid rgba(255,255,255,0.06);
+    color:var(--text-muted); font-size:12px;
+  }
+
+  @keyframes fadeUp {
+    from { opacity:0; transform:translateY(16px); }
+    to   { opacity:1; transform:translateY(0); }
+  }
+
+  /* ---- INTERVIEW SCORING ---- */
+  .interview-board {
+    background:var(--dark3); border:1px solid rgba(201,168,76,0.25);
+    border-radius:12px; padding:20px 22px; margin-bottom:28px;
+    position: sticky; top: 8px; z-index: 10;
+  }
+  .board-header {
+    display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;
+  }
+  .board-label {
+    font-size:11px; font-weight:700; letter-spacing:0.15em; text-transform:uppercase; color:var(--gold);
+  }
+  .board-total {
+    font-size:13px; font-weight:700; color:var(--gold-light);
+  }
+  .board-blocks {
+    display:grid; grid-template-columns:repeat(5,1fr); gap:7px; margin-bottom:14px;
+  }
+  .board-block {
+    background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07);
+    border-radius:8px; padding:10px 6px; text-align:center; transition:all 0.25s;
+  }
+  .board-block-name { font-size:9px; color:var(--text-muted); margin-bottom:5px; text-transform:uppercase; letter-spacing:0.05em; line-height:1.3; }
+  .board-block-val  { font-size:22px; font-weight:700; color:rgba(255,255,255,0.2); transition:color 0.25s; }
+  .board-block.b-0 .board-block-val { color:#F08080; }
+  .board-block.b-1 .board-block-val { color:#FFC850; }
+  .board-block.b-2 .board-block-val { color:var(--green); }
+  .board-track { height:5px; background:rgba(255,255,255,0.06); border-radius:3px; overflow:hidden; margin-bottom:12px; }
+  .board-fill  { height:100%; background:linear-gradient(90deg,#F08080,#FFC850,var(--green)); border-radius:3px; width:0%; transition:width 0.5s ease; }
+  .rec-box {
+    border-radius:8px; padding:11px 16px; font-size:14px; text-align:center; font-weight:500; transition:all 0.3s;
+  }
+  .rec-pending { background:rgba(255,255,255,0.03); color:var(--text-muted); border:1px dashed rgba(255,255,255,0.1); }
+  .rec-green   { background:rgba(125,200,125,0.12); color:var(--green);  border:1px solid rgba(125,200,125,0.3); }
+  .rec-yellow  { background:rgba(255,200,80,0.10);  color:#FFC850;       border:1px solid rgba(255,200,80,0.3); }
+  .rec-red     { background:rgba(240,128,128,0.10); color:#F08080;       border:1px solid rgba(240,128,128,0.3); }
+
+  .score-selector {
+    margin-top:16px; padding-top:14px;
+    border-top:1px solid rgba(255,255,255,0.06);
+  }
+  .ss-label {
+    font-size:11px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase;
+    color:var(--text-muted); margin-bottom:10px;
+  }
+  .ss-btns { display:flex; flex-wrap:wrap; gap:8px; }
+  .sbtn {
+    background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.1);
+    color:var(--text-muted); padding:9px 16px; border-radius:8px;
+    cursor:pointer; font-size:13px; font-family:'DM Sans',sans-serif;
+    transition:all 0.2s; line-height:1.2;
+  }
+  .sbtn:hover { border-color:rgba(201,168,76,0.3); color:var(--text); }
+  .sbtn.sel-0 { background:rgba(240,128,128,0.15); border-color:rgba(240,128,128,0.4); color:#F08080; font-weight:600; }
+  .sbtn.sel-1 { background:rgba(255,200,80,0.12);  border-color:rgba(255,200,80,0.35);  color:#FFC850; font-weight:600; }
+  .sbtn.sel-2 { background:rgba(125,200,125,0.14); border-color:rgba(125,200,125,0.35); color:var(--green); font-weight:600; }
+
+  /* ---- PREMIAÇÃO TABLE ---- */
+  .prem-table { width:100%; border-collapse:collapse; margin:10px 0 18px; }
+  .prem-table th { background:rgba(201,168,76,0.12); color:var(--gold); font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; padding:9px 12px; text-align:left; border-bottom:1px solid rgba(201,168,76,0.2); }
+  .prem-table td { padding:8px 12px; font-size:13px; color:var(--text); border-bottom:1px solid rgba(255,255,255,0.05); }
+  .prem-table tr:last-child td { border-bottom:none; }
+  .prem-table td:first-child { font-weight:600; color:var(--gold-light); }
+
+  /* ---- ONBOARDING / FASE ---- */
+  .phase-badge {
+    font-size:11px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase;
+    padding:5px 14px; border-radius:20px; white-space:nowrap;
+  }
+  .phase-1 { background:rgba(122,171,255,0.12); color:var(--blue); border:1px solid rgba(122,171,255,0.3); }
+  .phase-2 { background:rgba(201,168,76,0.12);  color:var(--gold); border:1px solid rgba(201,168,76,0.3); }
+  .phase-3 { background:rgba(125,200,125,0.12); color:var(--green); border:1px solid rgba(125,200,125,0.3); }
+
+  /* ---- PDF UPLOAD ---- */
+  .upload-zone {
+    border:2px dashed rgba(201,168,76,0.3);
+    border-radius:14px; padding:36px 24px;
+    text-align:center; cursor:pointer;
+    background:rgba(201,168,76,0.03);
+    transition:all 0.25s ease;
+    margin-bottom:20px;
+  }
+  .upload-zone:hover, .upload-zone.drag-over {
+    border-color:rgba(201,168,76,0.6);
+    background:rgba(201,168,76,0.07);
+  }
+  .upload-icon { font-size:36px; margin-bottom:10px; }
+  .upload-title { font-size:15px; font-weight:600; color:var(--text); margin-bottom:6px; }
+  .upload-sub { font-size:13px; color:var(--text-muted); }
+  .upload-btn {
+    display:inline-block; margin-top:14px;
+    background:rgba(201,168,76,0.15); border:1px solid rgba(201,168,76,0.35);
+    color:var(--gold); font-size:12px; font-weight:600; letter-spacing:0.08em;
+    padding:8px 20px; border-radius:6px; cursor:pointer;
+    transition:all 0.2s ease; font-family:'DM Sans',sans-serif;
+  }
+  .upload-btn:hover { background:rgba(201,168,76,0.25); }
+  #fileInput { display:none; }
+
+  /* ---- CV ANALYSIS RESULT ---- */
+  .cv-result {
+    background:var(--dark3); border:1px solid rgba(201,168,76,0.2);
+    border-radius:14px; padding:24px; margin-bottom:24px;
+    display:none;
+  }
+  .cv-result.visible { display:block; animation:fadeUp 0.4s ease both; }
+  .cv-result-header {
+    display:flex; align-items:center; justify-content:space-between;
+    margin-bottom:18px; flex-wrap:wrap; gap:10px;
+  }
+  .cv-name { font-family:'Playfair Display',serif; font-size:18px; font-weight:700; color:#fff; }
+  .cv-verdict {
+    font-size:12px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase;
+    padding:6px 16px; border-radius:20px;
+  }
+  .verdict-green  { background:rgba(125,200,125,0.15); color:var(--green);  border:1px solid rgba(125,200,125,0.3); }
+  .verdict-yellow { background:rgba(255,200,80,0.12);  color:#FFC850;       border:1px solid rgba(255,200,80,0.3); }
+  .verdict-red    { background:rgba(240,128,128,0.12); color:#F08080;       border:1px solid rgba(240,128,128,0.3); }
+
+  .cv-score-bar {
+    display:flex; align-items:center; gap:14px; margin-bottom:18px;
+  }
+  .cv-score-num {
+    font-size:36px; font-weight:700; font-family:'Playfair Display',serif;
+    color:var(--gold-light); line-height:1;
+  }
+  .cv-score-info { flex:1; }
+  .cv-score-label { font-size:11px; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.1em; margin-bottom:6px; }
+  .cv-track { height:6px; background:rgba(255,255,255,0.07); border-radius:3px; overflow:hidden; }
+  .cv-fill { height:100%; border-radius:3px; transition:width 0.6s ease; }
+
+  .cv-findings { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:16px; }
+  .cv-finding {
+    background:rgba(255,255,255,0.02); border-radius:8px; padding:12px 14px;
+    border:1px solid rgba(255,255,255,0.05);
+  }
+  .cv-finding-label { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.1em; color:var(--text-muted); margin-bottom:6px; }
+  .cv-finding-value { font-size:13px; color:var(--text); line-height:1.4; }
+  .cv-finding-value.pos { color:var(--green); }
+  .cv-finding-value.neg { color:#F08080; }
+  .cv-finding-value.neu { color:#FFC850; }
+
+  .cv-keywords {
+    margin-top:14px; padding-top:14px;
+    border-top:1px solid rgba(255,255,255,0.05);
+  }
+  .cv-kw-label { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.1em; color:var(--text-muted); margin-bottom:8px; }
+  .cv-kw-tags { display:flex; flex-wrap:wrap; gap:6px; }
+  .kw-tag {
+    font-size:11px; font-weight:600; padding:3px 10px; border-radius:12px;
+    background:rgba(201,168,76,0.12); color:var(--gold); border:1px solid rgba(201,168,76,0.25);
+  }
+  .kw-tag.red { background:rgba(240,128,128,0.1); color:#F08080; border-color:rgba(240,128,128,0.25); }
+
+  .cv-loading {
+    text-align:center; padding:32px; display:none;
+  }
+  .cv-loading.visible { display:block; }
+  .loader-spin {
+    width:36px; height:36px; border:3px solid rgba(201,168,76,0.2);
+    border-top-color:var(--gold); border-radius:50%;
+    animation:spin 0.8s linear infinite; margin:0 auto 12px;
+  }
+  @keyframes spin { to { transform:rotate(360deg); } }
+
+  .cv-error {
+    background:rgba(240,128,128,0.07); border:1px solid rgba(240,128,128,0.2);
+    border-radius:10px; padding:16px 20px; font-size:13px; color:#F08080;
+    display:none; margin-bottom:14px;
+  }
+  .cv-error.visible { display:block; }
+
+  .reset-btn {
+    background:none; border:1px solid rgba(255,255,255,0.1);
+    color:var(--text-muted); font-size:12px; padding:6px 14px;
+    border-radius:6px; cursor:pointer; font-family:'DM Sans',sans-serif;
+    transition:all 0.2s; margin-top:14px;
+  }
+  .reset-btn:hover { border-color:rgba(201,168,76,0.3); color:var(--gold); }
+
+  /* ---- ACOMPANHAMENTO TRACKER ---- */
+  .tracker-grid {
+    display:grid; grid-template-columns:repeat(4,1fr); gap:10px;
+    margin-bottom:28px;
+  }
+  .tracker-col {
+    background:var(--dark2); border:1px solid rgba(255,255,255,0.07);
+    border-radius:12px; overflow:hidden;
+  }
+  .tracker-col-header {
+    padding:12px 14px; font-size:11px; font-weight:700;
+    letter-spacing:0.1em; text-transform:uppercase; text-align:center;
+  }
+  .tc-week  { background:rgba(122,171,255,0.12); color:var(--blue);  border-bottom:1px solid rgba(122,171,255,0.2); }
+  .tc-month { background:rgba(201,168,76,0.1);  color:var(--gold);  border-bottom:1px solid rgba(201,168,76,0.2); }
+  .tc-mid   { background:rgba(100,180,100,0.1); color:var(--green); border-bottom:1px solid rgba(100,180,100,0.2); }
+  .tc-final { background:rgba(240,128,128,0.08); color:#F08080;     border-bottom:1px solid rgba(240,128,128,0.2); }
+  .tracker-col-body { padding:10px; display:flex; flex-direction:column; gap:6px; }
+  .t-item {
+    display:flex; align-items:flex-start; gap:8px;
+    padding:8px 10px; border-radius:8px;
+    background:rgba(255,255,255,0.02); cursor:pointer;
+    transition:all 0.2s ease; user-select:none;
+  }
+  .t-item:hover { background:rgba(201,168,76,0.05); }
+  .t-item.done { background:rgba(201,168,76,0.07); }
+  .t-box {
+    width:16px; height:16px; border-radius:3px;
+    border:1.5px solid rgba(201,168,76,0.3);
+    display:flex; align-items:center; justify-content:center;
+    flex-shrink:0; font-size:9px; margin-top:1px; transition:all 0.2s;
+  }
+  .t-item.done .t-box { background:var(--gold); border-color:var(--gold); color:var(--dark); }
+  .t-label { font-size:11px; color:var(--text); line-height:1.4; }
+  .t-item.done .t-label { text-decoration:line-through; color:var(--text-muted); }
+
+  .tracker-summary {
+    background:var(--dark3); border:1px solid rgba(201,168,76,0.15);
+    border-radius:12px; padding:16px 20px; margin-bottom:28px;
+    display:flex; align-items:center; gap:16px;
+  }
+  .tracker-pct {
+    font-size:28px; font-weight:700; font-family:'Playfair Display',serif;
+    color:var(--gold-light); line-height:1; white-space:nowrap;
+  }
+  .tracker-info { flex:1; }
+  .tracker-info-label { font-size:11px; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.1em; margin-bottom:6px; }
+  .tracker-track { height:5px; background:rgba(255,255,255,0.06); border-radius:3px; overflow:hidden; }
+  .tracker-fill { height:100%; background:linear-gradient(90deg,var(--gold),var(--green)); border-radius:3px; transition:width 0.5s ease; }
+  .reset-tracker {
+    background:none; border:1px solid rgba(255,255,255,0.1); color:var(--text-muted);
+    font-size:11px; padding:5px 12px; border-radius:6px; cursor:pointer;
+    font-family:'DM Sans',sans-serif; transition:all 0.2s; white-space:nowrap;
+  }
+  .reset-tracker:hover { border-color:rgba(240,128,128,0.3); color:#F08080; }
+
+  /* ===== MOBILE ===== */
+  @media (max-width: 640px) {
+    .container { padding: 28px 16px; }
+    h1 { font-size: clamp(26px, 8vw, 40px); }
+    .tabs { overflow-x:auto; -webkit-overflow-scrolling:touch; flex-wrap:nowrap; scrollbar-width:none; }
+    .tabs::-webkit-scrollbar { display:none; }
+    .tab { min-width:80px; padding:9px 6px; font-size:11px; }
+    .card { padding:16px 14px; }
+    .card-title { font-size:14px; }
+    .card-icon { width:36px; height:36px; font-size:16px; }
+    .card.active .card-body { max-height:3000px; }
+    .board-blocks { grid-template-columns:repeat(3,1fr); gap:5px; }
+    .board-block-name { font-size:8px; }
+    .board-block-val  { font-size:18px; }
+    .score-grid { grid-template-columns:1fr; }
+    .cv-findings { grid-template-columns:1fr; }
+    .tracker-grid { grid-template-columns:1fr 1fr; }
+    .ss-btns { flex-direction:column; }
+    .sbtn { font-size:12px; padding:10px 12px; }
+    .step-text, .pergunta { font-size:13px; }
+    .template-box { padding:14px; font-size:12px; }
+  }
+  @media (max-width: 400px) {
+    .tracker-grid { grid-template-columns:1fr; }
+    .tab { min-width:70px; font-size:10px; }
+  }
+
+  /* ---- DECISÃO 90d ---- */
+  .dec-input {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(201,168,76,0.2);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 14px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    width: 100%;
+    transition: border-color 0.2s ease;
+    outline: none;
+    margin-top: 4px;
+  }
+  .dec-input:focus { border-color: rgba(201,168,76,0.5); }
+  .dec-input::placeholder { color: var(--text-muted); }
+  textarea.dec-input { resize: vertical; min-height: 70px; }
+
+  .input-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    display: block;
+    margin-bottom: 2px;
+  }
+
+  .comp-row {
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 10px;
+    padding: 14px 16px;
+  }
+  .comp-label {
+    font-size: 13px;
+    color: var(--text);
+    margin-bottom: 10px;
+    font-weight: 500;
+  }
+  .comp-btns {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .cbtn {
+    flex: 1;
+    min-width: 66px;
+    padding: 8px 8px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: var(--text-muted);
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 12px;
+    font-family: 'DM Sans', sans-serif;
+    transition: all 0.2s;
+    text-align: center;
+    line-height: 1.2;
+  }
+  .cbtn:hover { border-color: rgba(201,168,76,0.3); color: var(--text); }
+  .cbtn.cbtn-sel-0 { background:rgba(240,128,128,0.15); border-color:rgba(240,128,128,0.4); color:#F08080; font-weight:600; }
+  .cbtn.cbtn-sel-1 { background:rgba(255,200,80,0.12);  border-color:rgba(255,200,80,0.35);  color:#FFC850; font-weight:600; }
+  .cbtn.cbtn-sel-2 { background:rgba(122,171,255,0.12); border-color:rgba(122,171,255,0.3);  color:var(--blue); font-weight:600; }
+  .cbtn.cbtn-sel-3 { background:rgba(125,200,125,0.14); border-color:rgba(125,200,125,0.35); color:var(--green); font-weight:600; }
+
+  .dec-feedback {
+    font-size: 13px;
+    color: var(--text-muted);
+    padding: 9px 14px;
+    border-radius: 7px;
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,255,255,0.05);
+    min-height: 36px;
+    display: flex;
+    align-items: center;
+    transition: color 0.3s;
+  }
+
+  @media (max-width: 600px) {
+    .cbtn { min-width: 54px; font-size: 11px; padding: 7px 4px; }
+  }
+
+  /* ---- STAGE SELECTOR ---- */
+  .stage-selector {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 28px;
+  }
+  .stage-btn {
+    background: var(--dark2); border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 12px; padding: 16px 18px; cursor: pointer;
+    font-family: 'DM Sans', sans-serif; text-align: left;
+    transition: all 0.25s ease; color: var(--text-muted);
+  }
+  .stage-btn:hover { border-color: rgba(201,168,76,0.25); color: var(--text); }
+  .stage-btn.active {
+    background: linear-gradient(135deg, rgba(201,168,76,0.15), rgba(201,168,76,0.07));
+    border-color: rgba(201,168,76,0.4); color: var(--text);
+  }
+  .stage-btn-num {
+    font-size: 10px; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 5px;
+  }
+  .stage-btn.active .stage-btn-num { color: var(--gold-light); }
+  .stage-btn-title {
+    font-family: 'Playfair Display', serif; font-size: 16px; font-weight: 700;
+    color: #fff; margin-bottom: 3px;
+  }
+  .stage-btn-sub { font-size: 12px; color: var(--text-muted); }
+  .stage-divider {
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; color: rgba(201,168,76,0.4); user-select: none;
+  }
+  .stage-panel { display: none; }
+  .stage-panel.active { display: block; animation: fadeUp 0.4s ease both; }
+  @media (max-width: 480px) {
+    .stage-selector { grid-template-columns: 1fr; }
+    .stage-divider { display: none; }
+  }
+</style>
+</head>
+<body>
+<noscript>
+  <div style="background:#C9A84C;color:#0E0E0E;text-align:center;padding:14px 20px;font-size:14px;font-weight:600;font-family:sans-serif;">
+    ⚠️ Para usar as abas e o placar interativo, abra este arquivo no <strong>Safari</strong>:<br>
+    <span style="font-weight:400">Toque no ícone de compartilhar (□↑) → "Abrir no Safari"</span>
+  </div>
+</noscript>
+<div class="container">
+
+  <header class="header">
+    <div class="brand-tag">First Class Home · Contratação 2026</div>
+    <h1>Seleção &<br><span>Período de Experiência</span></h1>
+    <p class="subtitle">Da triagem do currículo à efetivação — guia completo para selecionar, entrevistar e acompanhar vendedores até o final do contrato de experiência.</p>
+  </header>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab(0)">📄<br>Seleção</div>
+    <div class="tab" onclick="switchTab(1)">💬<br>Entrevista</div>
+    <div class="tab" onclick="switchTab(2)">🗓️<br>Acompanhamento</div>
+    <div class="tab" onclick="switchTab(3)">⚖️<br>Decisão PE</div>
+  </div>
+
+
+  <!-- ==================== PAINEL 1: SELEÇÃO DE CURRÍCULO ==================== -->
+  <div class="panel active" id="panel-0">
+
+    <div class="section-title">Análise automática de currículo</div>
+
+    <!-- UPLOAD ZONE -->
+    <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()"
+         ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)">
+      <div class="upload-icon">📄</div>
+      <div class="upload-title">Faça upload do currículo em PDF</div>
+      <div class="upload-sub">Arraste o arquivo aqui ou clique para selecionar</div>
+      <div class="upload-btn">Selecionar PDF</div>
+      <input type="file" id="fileInput" accept=".pdf,application/pdf" onchange="handleFile(event)">
+    </div>
+
+    <div class="cv-error" id="cvError"></div>
+    <div class="cv-loading" id="cvLoading">
+      <div class="loader-spin"></div>
+      <div style="font-size:14px; color:var(--text-muted);">Analisando currículo...</div>
+    </div>
+
+    <!-- RESULTADO DA ANÁLISE -->
+    <div class="cv-result" id="cvResult">
+      <div class="cv-result-header">
+        <div class="cv-name" id="cvFileName">—</div>
+        <div class="cv-verdict" id="cvVerdict">—</div>
+      </div>
+
+      <div class="cv-score-bar">
+        <div class="cv-score-num" id="cvScoreNum">0</div>
+        <div class="cv-score-info">
+          <div class="cv-score-label">Pontuação de aderência (máx. 7 pontos)</div>
+          <div class="cv-track">
+            <div class="cv-fill" id="cvFill" style="width:0%; background:var(--gold);"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="cv-findings" id="cvFindings"></div>
+
+      <div class="cv-keywords" id="cvKeywordsSection">
+        <div class="cv-kw-label">Palavras-chave encontradas</div>
+        <div class="cv-kw-tags" id="cvKeywordTags"></div>
+      </div>
+
+      <div class="info-box" id="cvRec" style="margin-top:18px;"></div>
+
+      <button class="reset-btn" onclick="resetCV()">↩ Analisar outro currículo</button>
+    </div>
+
+    <div class="section-title">Análise manual — antes de chamar</div>
+
+    <div class="card" onclick="toggle(this)">
+      <div class="card-header">
+        <div class="card-left">
+          <div class="card-icon">📋</div>
+          <div class="card-title">Script de análise de currículo</div>
+        </div>
+        <span class="card-badge badge-high">1º passo</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="card-body"><div class="card-body-inner">
+        <p class="card-desc">Antes de chamar qualquer candidato para triagem no WhatsApp, leia o currículo com esse roteiro. Leva menos de 2 minutos por currículo e evita perder tempo com perfis fora do esperado.</p>
+
+        <p style="font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:0.1em; color:#F08080; margin-bottom:8px;">🚫 Descarte imediato (qualquer um destes):</p>
+        <ul class="steps" style="margin-bottom:18px;">
+          <li class="step"><span class="step-num">✗</span><span class="step-text">Sem disponibilidade para sábado (se já mencionou no anúncio)</span></li>
+          <li class="step"><span class="step-num">✗</span><span class="step-text">Pretensão salarial muito acima do orçamento da loja</span></li>
+          <li class="step"><span class="step-num">✗</span><span class="step-text">Sem nenhum contato válido (telefone ou e-mail)</span></li>
+          <li class="step"><span class="step-num">✗</span><span class="step-text">Mais de 4 empregos em menos de 2 anos sem nenhuma justificativa</span></li>
+        </ul>
+
+        <p style="font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:0.1em; color:var(--gold); margin-bottom:8px;">⭐ Sistema de pontos — some os critérios positivos e negativos:</p>
+        <table class="prem-table">
+          <thead><tr><th>Critério</th><th>Pontos</th></tr></thead>
+          <tbody>
+            <tr><td>Experiência em vendas ou atendimento ao cliente</td><td>+2</td></tr>
+            <tr><td>Ficou 1 ano ou mais no último emprego</td><td>+2</td></tr>
+            <tr><td>30 anos ou mais de idade</td><td>+1</td></tr>
+            <tr><td>Histórico estável (máx. 2 empregos nos últimos 3 anos)</td><td>+1</td></tr>
+            <tr><td>Experiência em varejo (roupas, casa, decoração, moda)</td><td>+1</td></tr>
+            <tr><td>Mais de 3 empregos em 2 anos sem justificativa</td><td>−2</td></tr>
+            <tr><td>Lacuna longa sem explicação (6+ meses parada)</td><td>−1</td></tr>
+          </tbody>
+        </table>
+
+        <div class="score-grid" style="margin-top:4px;">
+          <div class="score-item"><span class="score-dot dot-green"></span><span class="score-label"><strong>5–7 pts</strong> → Chamar para triagem no WhatsApp</span></div>
+          <div class="score-item"><span class="score-dot" style="background:#FFC850;"></span><span class="score-label"><strong>3–4 pts</strong> → Chamar se não tiver candidatos melhores</span></div>
+          <div class="score-item"><span class="score-dot dot-red"></span><span class="score-label"><strong>0–2 pts</strong> → Guardar no banco de talentos</span></div>
+          <div class="score-item"><span class="score-dot dot-gold"></span><span class="score-label"><strong>Bônus:</strong> candidato 30+ anos + histórico longo = prioridade máxima</span></div>
+        </div>
+        <div class="info-box" style="margin-top:14px;">
+          <strong>💡 Lembre:</strong> um currículo bem escrito não garante um bom vendedor — mas um currículo cheio de alertas vermelhos geralmente confirma um mau candidato. Use o WhatsApp para confirmar os pontos positivos.
+        </div>
+      </div></div>
+    </div>
+
+    <div class="section-title">Pré-filtro via WhatsApp</div>
+
+    <div class="card" onclick="toggle(this)">
+      <div class="card-header">
+        <div class="card-left">
+          <div class="card-icon">💬</div>
+          <div class="card-title">Mensagem de triagem via WhatsApp</div>
+        </div>
+        <span class="card-badge badge-quick">Economiza tempo</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="card-body"><div class="card-body-inner">
+        <p class="card-desc">Envie para todos que mandarem currículo. Elimina candidatos sem perfil antes de você gastar tempo em entrevista.</p>
+        <div class="template-box">
+          <button class="copy-btn" onclick="copyTemplate(event,this)">Copiar</button>
+Olá, [Nome]! Obrigado pelo interesse na vaga de vendedor(a) da First Class Home. 😊
+
+Para avançarmos no processo, responda rapidamente:
+
+1️⃣ Você tem experiência com vendas ou atendimento ao cliente? Se sim, onde e por quanto tempo?
+2️⃣ Já trabalhou com metas de vendas? Como era a cobrança?
+3️⃣ Qual foi seu último emprego e por quanto tempo ficou?
+4️⃣ Você tem disponibilidade para trabalhar aos sábados?
+5️⃣ Qual a sua pretensão salarial?
+
+Aguardo seu retorno para agendar a entrevista!
+        </div>
+      </div></div>
+    </div>
+
+    <div class="card" onclick="toggle(this)">
+      <div class="card-header">
+        <div class="card-left">
+          <div class="card-icon">💌</div>
+          <div class="card-title">Mensagens de retorno — candidatos não selecionados</div>
+        </div>
+        <span class="card-badge badge-quick">Profissionalismo</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="card-body"><div class="card-body-inner">
+        <p class="card-desc">Dar retorno a todos os candidatos que participaram do processo é uma prática que protege a imagem da empresa e respeita quem investiu tempo.</p>
+
+        <p style="font-size:12px; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-muted); margin-bottom:8px;">Recusa após triagem (WhatsApp)</p>
+        <div class="template-box">
+          <button class="copy-btn" onclick="copyTemplate(event,this)">Copiar</button>
+Olá, [Nome]! Obrigado pelo seu interesse na vaga de vendedor(a) da First Class Home. 😊
+
+Avaliamos com atenção o seu perfil, mas no momento seguiremos com candidatos cujas experiências estão mais alinhadas com o que precisamos agora.
+
+Guardamos o seu contato e, caso surja uma nova oportunidade que combine com o seu perfil, entraremos em contato.
+
+Muito obrigado e boa sorte! 🌟
+        </div>
+
+        <p style="font-size:12px; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-muted); margin-bottom:8px; margin-top:18px;">Recusa após entrevista (WhatsApp)</p>
+        <div class="template-box">
+          <button class="copy-btn" onclick="copyTemplate(event,this)">Copiar</button>
+Olá, [Nome]! Foi um prazer te conhecer na entrevista para a First Class Home. 😊
+
+Agradecemos muito o seu tempo e a disposição em participar do nosso processo seletivo.
+
+Após avaliar todos os candidatos, decidimos seguir com outro perfil neste momento. Foi uma decisão difícil, pois percebemos qualidades no seu perfil.
+
+Ficamos com o seu contato e, surgindo uma nova oportunidade, você será um dos primeiros a ser chamado.
+
+Continuamos na torcida pelo seu sucesso! 🌟
+        </div>
+
+        <div class="info-box" style="margin-top:14px;">
+          <strong>💡 Dica:</strong> Envie o retorno em até 48h após a decisão. Candidatos que ficam sem resposta tendem a falar mal da empresa em grupos de emprego — o que prejudica futuras contratações.
+        </div>
+      </div></div>
+    </div>
+
+    <div class="card" onclick="toggle(this)">
+      <div class="card-header">
+        <div class="card-left">
+          <div class="card-icon">🚦</div>
+          <div class="card-title">Sinais de alerta na triagem</div>
+        </div>
+        <span class="card-badge badge-ret">Atenção</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="card-body"><div class="card-body-inner">
+        <p class="card-desc">Antes de convidar para entrevista, observe esses pontos nas respostas:</p>
+        <ul class="steps">
+          <li class="step"><span class="step-num">⚠️</span><span class="step-text"><strong>Histórico de muitas trocas rápidas</strong> — mais de 3 empregos em 2 anos sem justificativa sólida.</span></li>
+          <li class="step"><span class="step-num">⚠️</span><span class="step-text"><strong>Não disponível aos sábados</strong> — essencial para o varejo, descarte imediato se não tiver flexibilidade.</span></li>
+          <li class="step"><span class="step-num">⚠️</span><span class="step-text"><strong>Pretensão muito acima do orçamento</strong> — evita frustração depois.</span></li>
+          <li class="step"><span class="step-num">✅</span><span class="step-text"><strong>Bom sinal:</strong> respostas detalhadas, exemplos concretos e tempo de resposta rápido mostram interesse real.</span></li>
+        </ul>
+      </div></div>
+    </div>
+
+  </div>
+
+
+  <!-- ==================== PAINEL 2: ENTREVISTA ==================== -->
+  <div class="panel" id="panel-1">
+
+    <!-- LIVE SCORE BOARD -->
+    <div class="interview-board" id="interview-board">
+      <div class="board-header">
+        <span class="board-label">📊 Placar da Entrevista</span>
+        <span class="board-total" id="board-total-text">0 / 10 pontos</span>
+      </div>
+      <div class="board-blocks">
+        <div class="board-block" id="bb-exp">
+          <div class="board-block-name">Experiência</div>
+          <div class="board-block-val" id="bv-exp">–</div>
+        </div>
+        <div class="board-block" id="bb-com">
+          <div class="board-block-name">Comunicação</div>
+          <div class="board-block-val" id="bv-com">–</div>
+        </div>
+        <div class="board-block" id="bb-res">
+          <div class="board-block-name">Responsab.</div>
+          <div class="board-block-val" id="bv-res">–</div>
+        </div>
+        <div class="board-block" id="bb-mot">
+          <div class="board-block-name">Motivação</div>
+          <div class="board-block-val" id="bv-mot">–</div>
+        </div>
+        <div class="board-block" id="bb-ali">
+          <div class="board-block-name">Alinhamento</div>
+          <div class="board-block-val" id="bv-ali">–</div>
+        </div>
+      </div>
+      <div class="board-track"><div class="board-fill" id="board-fill"></div></div>
+      <div class="rec-box rec-pending" id="rec-box">⏳ Avalie cada bloco durante a entrevista para ver a recomendação</div>
+    </div>
+
+    <div class="section-title">Perguntas por bloco — avalie ao finalizar cada bloco</div>
+
+    <div class="card" onclick="toggle(this)">
+      <div class="card-header">
+        <div class="card-left"><div class="card-icon">💼</div><div class="card-title">1. Experiência Profissional</div></div>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="card-body"><div class="card-body-inner">
+        <div class="perguntas">
+          <div class="pergunta">"Você já trabalhou com vendas? Onde e por quanto tempo?"</div>
+          <div class="pergunta">"Já trabalhou com metas de vendas? Como era a cobrança?"</div>
+          <div class="pergunta">"Já trabalhou com PA e TM?" <em>→ Explicar os termos se necessário</em></div>
+          <div class="pergunta">"Qual foi o produto mais desafiador que você já vendeu? Como conseguiu vender?"</div>
+        </div>
+        <div class="score-selector">
+          <p class="ss-label">Pontuação deste bloco:</p>
+          <div class="ss-btns" id="ss-exp">
+            <button class="sbtn" onclick="setScore('exp', 0, this, event)">😞 Não atende &nbsp;<strong>0</strong></button>
+            <button class="sbtn" onclick="setScore('exp', 1, this, event)">😐 Atende parcialmente &nbsp;<strong>1</strong></button>
+            <button class="sbtn" onclick="setScore('exp', 2, this, event)">✅ Atende bem &nbsp;<strong>2</strong></button>
+          </div>
+        </div>
+      </div></div>
+    </div>
+
+    <div class="card" onclick="toggle(this)">
+      <div class="card-header">
+        <div class="card-left"><div class="card-icon">🗣️</div><div class="card-title">2. Comunicação e Atendimento</div></div>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="card-body"><div class="card-body-inner">
+        <div class="perguntas">
+          <div class="pergunta">"Como você costuma abordar um cliente que acabou de entrar na loja?"</div>
+          <div class="pergunta">"Se o cliente disser que está só olhando, o que você faria?"</div>
+          <div class="pergunta">"Como você explicaria a diferença entre um produto simples e um produto de linha premium?"</div>
+        </div>
+        <div class="score-selector">
+          <p class="ss-label">Pontuação deste bloco:</p>
+          <div class="ss-btns" id="ss-com">
+            <button class="sbtn" onclick="setScore('com', 0, this, event)">😞 Não atende &nbsp;<strong>0</strong></button>
+            <button class="sbtn" onclick="setScore('com', 1, this, event)">😐 Atende parcialmente &nbsp;<strong>1</strong></button>
+            <button class="sbtn" onclick="setScore('com', 2, this, event)">✅ Atende bem &nbsp;<strong>2</strong></button>
+          </div>
+        </div>
+      </div></div>
+    </div>
+
+    <div class="card" onclick="toggle(this)">
+      <div class="card-header">
+        <div class="card-left"><div class="card-icon">⏰</div><div class="card-title">3. Responsabilidade e Assiduidade</div></div>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="card-body"><div class="card-body-inner">
+        <div class="perguntas">
+          <div class="pergunta">"Nos seus empregos anteriores, como era sua pontualidade e frequência?"</div>
+          <div class="pergunta">"O que você faz para se organizar e não ter problemas com atrasos ou faltas?"</div>
+          <div class="pergunta">"Se um imprevisto acontecer e você não puder ir trabalhar, como você costuma avisar a empresa?"</div>
+        </div>
+        <div class="score-selector">
+          <p class="ss-label">Pontuação deste bloco:</p>
+          <div class="ss-btns" id="ss-res">
+            <button class="sbtn" onclick="setScore('res', 0, this, event)">😞 Não atende &nbsp;<strong>0</strong></button>
+            <button class="sbtn" onclick="setScore('res', 1, this, event)">😐 Atende parcialmente &nbsp;<strong>1</strong></button>
+            <button class="sbtn" onclick="setScore('res', 2, this, event)">✅ Atende bem &nbsp;<strong>2</strong></button>
+          </div>
+        </div>
+      </div></div>
+    </div>
+
+    <div class="card" onclick="toggle(this)">
+      <div class="card-header">
+        <div class="card-left"><div class="card-icon">🔥</div><div class="card-title">4. Motivação e Perfil Pessoal</div></div>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="card-body"><div class="card-body-inner">
+        <div class="perguntas">
+          <div class="pergunta">"O que mais te motiva em um trabalho de vendas: o salário fixo, as metas ou as premiações rápidas?"</div>
+          <div class="pergunta">"Como você se sente trabalhando sob pressão para bater metas?"</div>
+          <div class="pergunta">"Você prefere trabalhar sozinho ou em equipe? Por quê?"</div>
+        </div>
+        <div class="score-selector">
+          <p class="ss-label">Pontuação deste bloco:</p>
+          <div class="ss-btns" id="ss-mot">
+            <button class="sbtn" onclick="setScore('mot', 0, this, event)">😞 Não atende &nbsp;<strong>0</strong></button>
+            <button class="sbtn" onclick="setScore('mot', 1, this, event)">😐 Atende parcialmente &nbsp;<strong>1</strong></button>
+            <button class="sbtn" onclick="setScore('mot', 2, this, event)">✅ Atende bem &nbsp;<strong>2</strong></button>
+          </div>
+        </div>
+      </div></div>
+    </div>
+
+    <div class="card" onclick="toggle(this)">
+      <div class="card-header">
+        <div class="card-left"><div class="card-icon">📏</div><div class="card-title">5. Alinhamento com as Regras da Empresa</div></div>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="card-body"><div class="card-body-inner">
+        <div class="perguntas">
+          <div class="pergunta">"Aqui na empresa, não pode sair zerado em vendas no dia. Como você faria para evitar isso?"</div>
+          <div class="pergunta">"Nossas premiações são pagas rapidamente, mas exigem disciplina. Você se sente confortável com esse tipo de sistema?"</div>
+          <div class="pergunta">"Você entende que manter consistência é tão importante quanto vender bem? Como faria para manter o ritmo?"</div>
+        </div>
+        <div class="score-selector">
+          <p class="ss-label">Pontuação deste bloco:</p>
+          <div class="ss-btns" id="ss-ali">
+            <button class="sbtn" onclick="setScore('ali', 0, this, event)">😞 Não atende &nbsp;<strong>0</strong></button>
+            <button class="sbtn" onclick="setScore('ali', 1, this, event)">😐 Atende parcialmente &nbsp;<strong>1</strong></button>
+            <button class="sbtn" onclick="setScore('ali', 2, this, event)">✅ Atende bem &nbsp;<strong>2</strong></button>
+          </div>
+        </div>
+      </div></div>
+    </div>
+
+    <div class="section-title">Orientações para a entrevistadora</div>
+    <div class="card" style="cursor:default;">
+      <ul class="steps">
+        <li class="step"><span class="step-num">👁️</span><span class="step-text"><strong>Ouvir além da resposta:</strong> observar postura, clareza e segurança ao falar.</span></li>
+        <li class="step"><span class="step-num">📌</span><span class="step-text"><strong>Anotar exemplos concretos:</strong> candidatos que contam histórias reais de experiências anteriores mostram mais consistência.</span></li>
+        <li class="step"><span class="step-num">🔎</span><span class="step-text"><strong>Checar coerência:</strong> se o candidato fala que gosta de metas mas não traz exemplos, pode ser sinal de discurso ensaiado.</span></li>
+        <li class="step"><span class="step-num">🤫</span><span class="step-text"><strong>Dar espaço:</strong> deixar o candidato falar sem interromper rápido. O silêncio revela.</span></li>
+      </ul>
+    </div>
+
+    <div class="section-title">✅ Checklist comportamental — marque durante a entrevista</div>
+    <div class="card" style="cursor:default;">
+      <p class="card-desc" style="margin-bottom:14px; font-size:13px;">Sinais observados <strong>além das respostas</strong> — postura, energia, coerência:</p>
+      <ul class="checklist" id="checklist-aval">
+        <li class="checklist-item" onclick="toggleCheck(this,'aval')"><span class="check-box">✓</span><span class="check-text">Apresentou o produto com clareza e segurança?</span></li>
+        <li class="checklist-item" onclick="toggleCheck(this,'aval')"><span class="check-box">✓</span><span class="check-text">Demonstrou capacidade de aumentar o valor da sacola?</span></li>
+        <li class="checklist-item" onclick="toggleCheck(this,'aval')"><span class="check-box">✓</span><span class="check-text">Convence de forma natural ou parece forçado?</span></li>
+        <li class="checklist-item" onclick="toggleCheck(this,'aval')"><span class="check-box">✓</span><span class="check-text">Possui histórico de assiduidade comprovado?</span></li>
+        <li class="checklist-item" onclick="toggleCheck(this,'aval')"><span class="check-box">✓</span><span class="check-text">Trouxe exemplos concretos (não só discurso genérico)?</span></li>
+        <li class="checklist-item" onclick="toggleCheck(this,'aval')"><span class="check-box">✓</span><span class="check-text">Demonstrou maturidade emocional ao falar de pressão e metas?</span></li>
+        <li class="checklist-item" onclick="toggleCheck(this,'aval')"><span class="check-box">✓</span><span class="check-text">Mostrou interesse genuíno pelo produto e pelo segmento?</span></li>
+        <li class="checklist-item" onclick="toggleCheck(this,'aval')"><span class="check-box">✓</span><span class="check-text">Postura, olhar e energia transmitem confiança?</span></li>
+      </ul>
+      <div class="progress-bar" style="margin-top:20px; margin-bottom:0;">
+        <span class="progress-label">Sinais positivos observados</span>
+        <div class="progress-track"><div class="progress-fill" id="avalFill"></div></div>
+        <span class="progress-count" id="avalCount">0 / 8</span>
+      </div>
+      <div class="info-box" style="margin-top:14px;">
+        <strong>Referência:</strong> 6+ sinais positivos marcados → forte aderência ao perfil First Class. Abaixo de 4 → reavalie antes de avançar.
+      </div>
+    </div>
+
+  </div>
+
+
+  <!-- ==================== PAINEL 3: ACOMPANHAMENTO ==================== -->
+  <div class="panel" id="panel-2">
+
+    <div class="info-box" style="margin-bottom:28px; margin-top:0;">
+      <strong>🗓️ Por que acompanhar de perto:</strong> candidatos maduros formam sua opinião sobre a empresa nas primeiras 2 semanas. Um acompanhamento desorganizado comunica descuido e aumenta o risco de desistência ainda no período de experiência. Um acompanhamento bem feito gera lealdade imediata.
+    </div>
+
+    <!-- TRACKER GERAL -->
+    <div class="section-title">Rastreador do período de experiência (90 dias)</div>
+
+    <div class="tracker-summary">
+      <div class="tracker-pct" id="trackerPct">0%</div>
+      <div class="tracker-info">
+        <div class="tracker-info-label">Marcos concluídos no período de experiência</div>
+        <div class="tracker-track">
+          <div class="tracker-fill" id="trackerFill" style="width:0%"></div>
+        </div>
+      </div>
+      <button class="reset-tracker" onclick="resetTracker()">↩ Zerar</button>
+    </div>
+
+    <div class="tracker-grid" id="trackerGrid">
+      <!-- Semana 1 -->
+      <div class="tracker-col">
+        <div class="tracker-col-header tc-week">📅 Semana 1</div>
+        <div class="tracker-col-body">
+          <div class="t-item" onclick="toggleTracker(this)"><span class="t-box">✓</span><span class="t-label">Recepção pela gerente no 1º dia</span></div>
+          <div class="t-item" onclick="toggleTracker(this)"><span class="t-box">✓</span><span class="t-label">Tour pela loja e apresentação à equipe</span></div>
+          <div class="t-item" onclick="toggleTracker(this)"><span class="t-box">✓</span><span class="t-label">Entrega de uniforme e regras por escrito</span></div>
+          <div class="t-item" onclick="toggleTracker(this)"><span class="t-box">✓</span><span class="t-label">Treinamento de produto (dias 2–7)</span></div>
+          <div class="t-item" onclick="toggleTracker(this)"><span class="t-box">✓</span><span class="t-label">Acompanhou vendedor experiente (2 dias)</span></div>
+          <div class="t-item" onclick="toggleTracker(this)"><span class="t-box">✓</span><span class="t-label">Explicação de PA e TM com exemplos reais</span></div>
+          <div class="t-item" onclick="toggleTracker(this)"><span class="t-box">✓</span><span class="t-label">Check-in rápido no final da semana</span></div>
+        </div>
+      </div>
+
+      <!-- Mês 1 -->
+      <div class="tracker-col">
+        <div class="tracker-col-header tc-month">📅 1º Mês</div>
+        <div class="tracker-col-body">
+          <div class="t-item" onclick="toggleTracker(this)"><span class="t-box">✓</span><span class="t-label">Primeiras vendas autônomas com suporte disponível</span></div>
+          <div class="t-item" onclick="toggleTracker(this)"><span class="t-box">✓</span><span class="t-label">Acompanhamento semanal de PA e TM</span></div>
+          <div class="t-item" onclick="toggleTracker(this)"><span class="t-box">✓</span><span class="t-label">Feedback construtivo semanal (específico)</span></div>
+          <div class="t-item" onclick="toggleTracker(this)"><span class="t-box">✓</span><span class="t-label">Explicação completa do sistema de premiações</span></div>
+          <div class="t-item" onclick="toggleTracker(this)"><span class="t-box">✓</span><span class="t-label">Treinamento no sistema PDV / caixa</span></div>
+          <div class="t-item" onclick="toggleTracker(this)"><span class="t-box">✓</span><span class="t-label">Reunião de 30 dias (ouvir o colaborador)</span></div>
+        </div>
+      </div>
+
+      <!-- Mês 2 -->
+      <div class="tracker-col">
+        <div class="tracker-col-header tc-mid">📅 2º Mês</div>
+        <div class="tracker-col-body">
+          <div class="t-item" onclick="toggleTracker(this)"><span class="t-box">✓</span><span class="t-label">Definição de meta individual para o 2º mês</span></div>
+          <div class="t-item" onclick="toggleTracker(this)"><span class="t-box">✓</span><span class="t-label">Feedback quinzenal documentado</span></div>
+          <div class="t-item" onclick="toggleTracker(this)"><span class="t-box">✓</span><span class="t-label">Revisão de assiduidade e pontualidade</span></div>
+          <div class="t-item" onclick="toggleTracker(this)"><span class="t-box">✓</span><span class="t-label">Verificar engajamento com premiações</span></div>
+          <div class="t-item" onclick="toggleTracker(this)"><span class="t-box">✓</span><span class="t-label">Conversa informal: "como está se sentindo?"</span></div>
+        </div>
+      </div>
+
+      <!-- Mês 3 / Decisão -->
+      <div class="tracker-col">
+        <div class="tracker-col-header tc-final">📅 3º Mês · Decisão</div>
+        <div class="tracker-col-body">
+          <div class="t-item" onclick="toggleTracker(this)"><span class="t-box">✓</span><span class="t-label">Avaliação formal no 90º dia (documentada)</span></div>
+          <div class="t-item" onclick="toggleTracker(this)"><span class="t-box">✓</span><span class="t-label">Análise de PA, TM, assiduidade e postura</span></div>
+          <div class="t-item" onclick="toggleTracker(this)"><span class="t-box">✓</span><span class="t-label">Decisão comunicada com 5+ dias de antecedência</span></div>
+          <div class="t-item" onclick="toggleTracker(this)"><span class="t-box">✓</span><span class="t-label">Verificar ajuste salarial para o piso (se Belém)</span></div>
+          <div class="t-item" onclick="toggleTracker(this)"><span class="t-box">✓</span><span class="t-label">Formalizar efetivação ou encerramento</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ONBOARDING DETALHADO -->
+    <div class="section-title">📅 Semana 1 · Recepção e Integração</div>
+
+    <div class="card" onclick="toggle(this)">
+      <div class="card-header">
+        <div class="card-left"><div class="card-icon">👋</div><div class="card-title">Primeiro dia — como receber bem</div></div>
+        <span class="phase-badge phase-1">Semana 1</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="card-body"><div class="card-body-inner">
+        <p class="card-desc">O primeiro dia define o tom emocional de tudo que vem depois. Candidatos que se sentem bem-vindos no primeiro dia são muito menos propensos a desistir.</p>
+        <ul class="steps">
+          <li class="step"><span class="step-num">1</span><span class="step-text"><strong>Recepção pela gerente:</strong> a própria gerente ou responsável recebe o novo colaborador — não delegar para outro vendedor. Duração: 15–20 minutos.</span></li>
+          <li class="step"><span class="step-num">2</span><span class="step-text"><strong>Tour pela loja:</strong> mostrar estoque, PDV, caixa, área de descanso, onde ficam os materiais, saídas de emergência.</span></li>
+          <li class="step"><span class="step-num">3</span><span class="step-text"><strong>Apresentação à equipe:</strong> apresentar por nome + função. <em>"Esse é [Nome], vai trabalhar conosco a partir de hoje"</em> — simples e caloroso.</span></li>
+          <li class="step"><span class="step-num">4</span><span class="step-text"><strong>Entrega do uniforme</strong> e informações sobre guarda-volumes ou armário (se houver).</span></li>
+          <li class="step"><span class="step-num">5</span><span class="step-text"><strong>Explicação das regras básicas:</strong> horários, intervalo, política de uso de celular, procedimento para faltas e atrasos. Dar por escrito para não depender de memória.</span></li>
+        </ul>
+      </div></div>
+    </div>
+
+    <div class="card" onclick="toggle(this)">
+      <div class="card-header">
+        <div class="card-left"><div class="card-icon">📚</div><div class="card-title">Dias 2–7 — Conhecimento de produto</div></div>
+        <span class="phase-badge phase-1">Semana 1</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="card-body"><div class="card-body-inner">
+        <ul class="steps">
+          <li class="step"><span class="step-num">📦</span><span class="step-text"><strong>Apresentação das linhas de produto:</strong> cama, mesa e banho — diferença entre categorias, marcas trabalhadas, faixas de preço.</span></li>
+          <li class="step"><span class="step-num">👥</span><span class="step-text"><strong>Acompanhar vendedor experiente:</strong> ao menos 2 dias observando como o time aborda e conduz vendas reais na loja.</span></li>
+          <li class="step"><span class="step-num">💻</span><span class="step-text"><strong>Treinamento no sistema:</strong> PDV, emissão de cupom fiscal, consulta de estoque — básico suficiente para operar no caixa com apoio.</span></li>
+          <li class="step"><span class="step-num">🎯</span><span class="step-text"><strong>Explicar PA e TM:</strong> o que significa cada indicador, como é medido, como funciona o cálculo da premiação. Mostrar exemplos reais do mês anterior.</span></li>
+          <li class="step"><span class="step-num">📞</span><span class="step-text"><strong>Check-in rápido ao final da semana (10 min):</strong> perguntar <em>"Como está sendo? Tem alguma dúvida?"</em>. Candidatos maduros apreciam muito ser ouvidos na primeira semana.</span></li>
+        </ul>
+      </div></div>
+    </div>
+
+    <div class="section-title">📅 1º Mês · Desenvolvimento</div>
+
+    <div class="card" onclick="toggle(this)">
+      <div class="card-header">
+        <div class="card-left"><div class="card-icon">🛒</div><div class="card-title">Mês 1 — Primeiras vendas independentes</div></div>
+        <span class="phase-badge phase-2">1º Mês</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="card-body"><div class="card-body-inner">
+        <p class="card-desc">O objetivo deste período é desenvolver autonomia com segurança. Erros são esperados — o gestor deve corrigir em privado, nunca na frente de clientes ou equipe.</p>
+        <ul class="steps">
+          <li class="step"><span class="step-num">🏁</span><span class="step-text"><strong>Primeiras vendas com supervisão leve:</strong> o novo vendedor vende de forma autônoma, mas o gestor está disponível para dúvidas em tempo real.</span></li>
+          <li class="step"><span class="step-num">📊</span><span class="step-text"><strong>Acompanhamento semanal de indicadores:</strong> mostrar ao novo colaborador como está o PA e TM comparado à equipe — sem pressão, apenas como informação.</span></li>
+          <li class="step"><span class="step-num">🗣️</span><span class="step-text"><strong>Feedback construtivo semanal:</strong> <em>"Você fez isso bem nessa semana. Um ponto que pode melhorar é..."</em> — específico, positivo e direto.</span></li>
+          <li class="step"><span class="step-num">🎁</span><span class="step-text"><strong>Explicar o sistema de premiações em detalhe:</strong> como funciona cada prêmio, quando é pago, o que é necessário para conquistar. Clareza aqui evita frustração depois.</span></li>
+          <li class="step"><span class="step-num">🔄</span><span class="step-text"><strong>Reunião de 30 dias (obrigatória):</strong> conversa de 20 minutos para ouvir o novo colaborador: <em>"O que está indo bem? O que podemos melhorar para te apoiar?"</em></span></li>
+        </ul>
+      </div></div>
+    </div>
+
+    <div class="section-title">📅 2º e 3º Mês · Avaliação e Decisão</div>
+
+    <div class="card" onclick="toggle(this)">
+      <div class="card-header">
+        <div class="card-left"><div class="card-icon">📋</div><div class="card-title">Avaliação do período de experiência</div></div>
+        <span class="phase-badge phase-3">2º e 3º Mês</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="card-body"><div class="card-body-inner">
+        <ul class="steps">
+          <li class="step"><span class="step-num">📈</span><span class="step-text"><strong>Definição de metas individuais do 2º mês:</strong> com base nos resultados do 1º mês, estabelecer uma meta realista e desafiadora para o PA e TM pessoal.</span></li>
+          <li class="step"><span class="step-num">⚖️</span><span class="step-text"><strong>Avaliação formal no 90º dia:</strong> antes do término do contrato de experiência, realizar avaliação documentada — assiduidade, PA, TM, postura, feedbacks recebidos.</span></li>
+          <li class="step"><span class="step-num">💼</span><span class="step-text"><strong>Decisão de efetivação:</strong> comunicar a decisão com clareza e antecedência mínima de 5 dias antes do vencimento do contrato de experiência.</span></li>
+          <li class="step"><span class="step-num">💰</span><span class="step-text"><strong>Atualização salarial (Belém):</strong> ao completar a experiência, verificar se o salário deve ser ajustado para o piso da 1ª faixa (<strong>R$ 1.641,70</strong>). Após 1 ano: 2ª faixa (<strong>R$ 1.722,42</strong>).</span></li>
+          <li class="step"><span class="step-num">🏙️</span><span class="step-text"><strong>Atualização salarial (Ananindeua):</strong> após a experiência, piso único de <strong>R$ 1.780,00</strong>. Período de experiência pode ser pago com salário mínimo nacional vigente.</span></li>
+        </ul>
+        <div class="info-box" style="margin-top:14px;">
+          <strong>📋 Critérios para avaliação de efetivação:</strong><br>
+          Assiduidade e pontualidade · Alcance de PA e TM · Postura e relacionamento com equipe · Respeito às regras da empresa · Evolução ao longo do período
+        </div>
+      </div></div>
+    </div>
+
+    <div class="card" onclick="toggle(this)">
+      <div class="card-header">
+        <div class="card-left"><div class="card-icon">💡</div><div class="card-title">O que mais retém um vendedor maduro</div></div>
+        <span class="phase-badge phase-3">Retenção</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="card-body"><div class="card-body-inner">
+        <p class="card-desc">Candidatos 30+ raramente saem por salário — saem por desrespeito, desorganização ou falta de reconhecimento.</p>
+        <div class="score-grid">
+          <div class="score-item"><span class="score-dot dot-gold"></span><span class="score-label">Cumprimento rigoroso das premiações no prazo combinado</span></div>
+          <div class="score-item"><span class="score-dot dot-gold"></span><span class="score-label">Reconhecimento verbal frequente pelo gestor</span></div>
+          <div class="score-item"><span class="score-dot dot-gold"></span><span class="score-label">Clareza absoluta nas regras — nada de "combinados informais"</span></div>
+          <div class="score-item"><span class="score-dot dot-gold"></span><span class="score-label">Gestor presente e acessível durante o período de experiência</span></div>
+          <div class="score-item"><span class="score-dot dot-green"></span><span class="score-label">Ambiente de equipe respeitoso e sem favoritismos visíveis</span></div>
+          <div class="score-item"><span class="score-dot dot-green"></span><span class="score-label">Feedback honesto — não ficar meses sem saber se está indo bem</span></div>
+        </div>
+      </div></div>
+    </div>
+
+  </div>
+
+  <!-- ==================== PAINEL 4: DECISÃO — PERÍODO DE EXPERIÊNCIA ==================== -->
+  <div class="panel" id="panel-3">
+
+    <div class="info-box" style="margin-bottom:24px; margin-top:0;">
+      <strong>📋 Contrato de experiência:</strong> Duas etapas de avaliação — <strong>1ª aos 30 dias</strong> (renovar ou encerrar) e <strong>2ª aos 60 dias</strong> (efetivar ou não). Cada etapa gera um registro independente para documentação.
+    </div>
+
+    <!-- STAGE SELECTOR -->
+    <div class="stage-selector">
+      <button class="stage-btn active" onclick="switchStage(0)">
+        <div class="stage-btn-num">1ª Avaliação</div>
+        <div class="stage-btn-title">30 dias</div>
+        <div class="stage-btn-sub">Renovar por mais 30 dias ou encerrar</div>
+      </button>
+      <button class="stage-btn" onclick="switchStage(1)">
+        <div class="stage-btn-num">2ª Avaliação</div>
+        <div class="stage-btn-title">60 dias</div>
+        <div class="stage-btn-sub">Efetivar definitivamente ou não</div>
+      </button>
+    </div>
+
+    <!-- ===== ESTÁGIO 1: 30 DIAS ===== -->
+    <div class="stage-panel active" id="stage-0">
+
+      <!-- STICKY BOARD -->
+      <div class="interview-board" style="margin-bottom:32px;">
+        <div class="board-header">
+          <span class="board-label">📋 Score — 30 dias</span>
+          <span class="board-total" id="dec1-total-text">Preencha os dados abaixo</span>
+        </div>
+        <div class="board-blocks" style="grid-template-columns:repeat(2,1fr);">
+          <div class="board-block" id="dbb1-ass">
+            <div class="board-block-name">Assiduidade</div>
+            <div class="board-block-val" id="dbv1-ass">–</div>
+          </div>
+          <div class="board-block" id="dbb1-comp">
+            <div class="board-block-name">Comportamento</div>
+            <div class="board-block-val" id="dbv1-comp">–</div>
+          </div>
+        </div>
+        <div class="board-track"><div class="board-fill" id="dec1-fill"></div></div>
+        <div class="rec-box rec-pending" id="dec1-rec">⏳ Preencha todos os campos para ver a recomendação</div>
+      </div>
+
+      <div class="section-title">Dados do 1° período (30 dias)</div>
+
+      <!-- ASSIDUIDADE 30d -->
+      <div class="card" style="cursor:default; margin-bottom:14px;">
+        <div class="card-header">
+          <div class="card-left"><div class="card-icon">📅</div><div class="card-title">Assiduidade</div></div>
+          <span class="card-badge badge-high">Peso 40%</span>
+        </div>
+        <div style="margin-top:20px; border-top:1px solid rgba(255,255,255,0.06); padding-top:20px;">
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px;">
+            <div>
+              <label class="input-label">Dias trabalhados (1° mês)</label>
+              <input class="dec-input" id="d1-dias-trab" type="number" min="0" max="31" placeholder="Ex: 22" oninput="calcDecision1()">
+            </div>
+            <div>
+              <label class="input-label">Total de dias úteis (1° mês)</label>
+              <input class="dec-input" id="d1-dias-uteis" type="number" min="1" max="31" placeholder="Ex: 23" oninput="calcDecision1()">
+            </div>
+          </div>
+          <div class="dec-feedback" id="fb1-ass">—</div>
+          <div class="info-box" style="margin-top:12px; padding:12px 16px;">
+            <strong>Referência:</strong> ≥ 95% = Excelente · 90–94% = Bom · 85–89% = Atenção · &lt; 85% = Veto automático
+          </div>
+        </div>
+      </div>
+
+      <!-- COMPORTAMENTO 30d -->
+      <div class="card" style="cursor:default; margin-bottom:14px;">
+        <div class="card-header">
+          <div class="card-left"><div class="card-icon">🤝</div><div class="card-title">Avaliação Comportamental — 1° mês</div></div>
+          <span class="card-badge badge-med">Peso 60%</span>
+        </div>
+        <div style="margin-top:20px; border-top:1px solid rgba(255,255,255,0.06); padding-top:20px;">
+          <p style="font-size:12px; color:var(--text-muted); margin-bottom:16px; line-height:1.6;">No primeiro mês, PA e TM ainda não são representativos — avalie a base comportamental que determina o potencial de desenvolvimento.</p>
+          <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:18px;">
+            <div class="comp-row">
+              <div class="comp-label">Postura e atitude com a equipe</div>
+              <div class="comp-btns">
+                <button class="cbtn" onclick="setComp1('postura',0,this)">😞 Ruim</button>
+                <button class="cbtn" onclick="setComp1('postura',1,this)">😐 Regular</button>
+                <button class="cbtn" onclick="setComp1('postura',2,this)">✅ Bom</button>
+                <button class="cbtn" onclick="setComp1('postura',3,this)">⭐ Ótimo</button>
+              </div>
+            </div>
+            <div class="comp-row">
+              <div class="comp-label">Disciplina, pontualidade e regras</div>
+              <div class="comp-btns">
+                <button class="cbtn" onclick="setComp1('disciplina',0,this)">😞 Ruim</button>
+                <button class="cbtn" onclick="setComp1('disciplina',1,this)">😐 Regular</button>
+                <button class="cbtn" onclick="setComp1('disciplina',2,this)">✅ Bom</button>
+                <button class="cbtn" onclick="setComp1('disciplina',3,this)">⭐ Ótimo</button>
+              </div>
+            </div>
+            <div class="comp-row">
+              <div class="comp-label">Relacionamento com clientes</div>
+              <div class="comp-btns">
+                <button class="cbtn" onclick="setComp1('cliente',0,this)">😞 Ruim</button>
+                <button class="cbtn" onclick="setComp1('cliente',1,this)">😐 Regular</button>
+                <button class="cbtn" onclick="setComp1('cliente',2,this)">✅ Bom</button>
+                <button class="cbtn" onclick="setComp1('cliente',3,this)">⭐ Ótimo</button>
+              </div>
+            </div>
+            <div class="comp-row">
+              <div class="comp-label">Aprendizado e adaptação ao processo da loja</div>
+              <div class="comp-btns">
+                <button class="cbtn" onclick="setComp1('aprendizado',0,this)">😞 Ruim</button>
+                <button class="cbtn" onclick="setComp1('aprendizado',1,this)">😐 Regular</button>
+                <button class="cbtn" onclick="setComp1('aprendizado',2,this)">✅ Bom</button>
+                <button class="cbtn" onclick="setComp1('aprendizado',3,this)">⭐ Ótimo</button>
+              </div>
+            </div>
+          </div>
+          <div class="dec-feedback" id="fb1-comp">—</div>
+        </div>
+      </div>
+
+      <!-- REGISTRO 30d -->
+      <div class="section-title">Registro da decisão — 30 dias</div>
+      <div class="card" style="cursor:default;">
+        <div style="display:flex; flex-direction:column; gap:14px;">
+          <div>
+            <label class="input-label">Nome do colaborador(a)</label>
+            <input class="dec-input" id="d1-nome" type="text" placeholder="Ex: Maria Silva" style="width:100%;">
+          </div>
+          <div>
+            <label class="input-label">Loja / Unidade</label>
+            <input class="dec-input" id="d1-loja" type="text" placeholder="Ex: BEL 3" style="width:100%;">
+          </div>
+          <div>
+            <label class="input-label">Observações da gerente (opcional)</label>
+            <textarea class="dec-input" id="d1-obs" rows="3" placeholder="Pontos que justificam a decisão, contexto adicional..." style="width:100%;"></textarea>
+          </div>
+          <button class="upload-btn" onclick="gerarResumo1()" style="width:100%; padding:14px; font-size:13px; letter-spacing:0.05em;">
+            📋 Gerar Resumo — 30 dias
+          </button>
+        </div>
+      </div>
+      <div id="dec1-resumo" style="display:none; margin-top:20px;">
+        <div class="section-title">Resumo para registro — 30 dias</div>
+        <div class="template-box" id="dec1-resumo-text" style="font-size:13px; line-height:1.9;">—</div>
+        <button class="copy-btn" style="position:relative; top:auto; right:auto; display:block; margin-top:10px;" onclick="copyResumo1()">Copiar Resumo</button>
+      </div>
+
+    </div><!-- fim stage-0 -->
+
+    <!-- ===== ESTÁGIO 2: 60 DIAS ===== -->
+    <div class="stage-panel" id="stage-1">
+
+      <!-- STICKY BOARD -->
+      <div class="interview-board" style="margin-bottom:32px;">
+        <div class="board-header">
+          <span class="board-label">⚖️ Score — 60 dias</span>
+          <span class="board-total" id="dec2-total-text">Preencha os dados abaixo</span>
+        </div>
+        <div class="board-blocks" style="grid-template-columns:repeat(4,1fr);">
+          <div class="board-block" id="dbb2-ass">
+            <div class="board-block-name">Assiduidade</div>
+            <div class="board-block-val" id="dbv2-ass">–</div>
+          </div>
+          <div class="board-block" id="dbb2-pa">
+            <div class="board-block-name">PA</div>
+            <div class="board-block-val" id="dbv2-pa">–</div>
+          </div>
+          <div class="board-block" id="dbb2-tm">
+            <div class="board-block-name">TM</div>
+            <div class="board-block-val" id="dbv2-tm">–</div>
+          </div>
+          <div class="board-block" id="dbb2-comp">
+            <div class="board-block-name">Comportamento</div>
+            <div class="board-block-val" id="dbv2-comp">–</div>
+          </div>
+        </div>
+        <div class="board-track"><div class="board-fill" id="dec2-fill"></div></div>
+        <div class="rec-box rec-pending" id="dec2-rec">⏳ Preencha todos os campos para ver a recomendação</div>
+      </div>
+
+      <div class="section-title">Dados do período completo (60 dias)</div>
+
+      <!-- ASSIDUIDADE 60d -->
+      <div class="card" style="cursor:default; margin-bottom:14px;">
+        <div class="card-header">
+          <div class="card-left"><div class="card-icon">📅</div><div class="card-title">Assiduidade</div></div>
+          <span class="card-badge badge-high">Peso 25%</span>
+        </div>
+        <div style="margin-top:20px; border-top:1px solid rgba(255,255,255,0.06); padding-top:20px;">
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px;">
+            <div>
+              <label class="input-label">Dias trabalhados (60 dias total)</label>
+              <input class="dec-input" id="d2-dias-trab" type="number" min="0" max="62" placeholder="Ex: 52" oninput="calcDecision2()">
+            </div>
+            <div>
+              <label class="input-label">Total de dias úteis (60 dias total)</label>
+              <input class="dec-input" id="d2-dias-uteis" type="number" min="1" max="62" placeholder="Ex: 54" oninput="calcDecision2()">
+            </div>
+          </div>
+          <div class="dec-feedback" id="fb2-ass">—</div>
+          <div class="info-box" style="margin-top:12px; padding:12px 16px;">
+            <strong>Referência:</strong> ≥ 95% = Excelente · 90–94% = Bom · 85–89% = Atenção · &lt; 85% = Veto automático
+          </div>
+        </div>
+      </div>
+
+      <!-- PA 60d -->
+      <div class="card" style="cursor:default; margin-bottom:14px;">
+        <div class="card-header">
+          <div class="card-left"><div class="card-icon">🛍️</div><div class="card-title">PA — Peça por Atendimento</div></div>
+          <span class="card-badge badge-high">Peso 30%</span>
+        </div>
+        <div style="margin-top:20px; border-top:1px solid rgba(255,255,255,0.06); padding-top:20px;">
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px;">
+            <div>
+              <label class="input-label">PA médio nos 60 dias</label>
+              <input class="dec-input" id="d2-pa-real" type="number" min="0" step="0.1" placeholder="Ex: 2.8" oninput="calcDecision2()">
+            </div>
+            <div>
+              <label class="input-label">Meta de PA da loja</label>
+              <input class="dec-input" id="d2-pa-meta" type="number" min="0" step="0.1" placeholder="Ex: 3.0" oninput="calcDecision2()">
+            </div>
+          </div>
+          <div class="dec-feedback" id="fb2-pa">—</div>
+          <div class="info-box" style="margin-top:12px; padding:12px 16px;">
+            <strong>Referência:</strong> ≥ 100% da meta = Excelente · 80–99% = Bom · 60–79% = Atenção · &lt; 60% = Abaixo do esperado
+          </div>
+        </div>
+      </div>
+
+      <!-- TM 60d -->
+      <div class="card" style="cursor:default; margin-bottom:14px;">
+        <div class="card-header">
+          <div class="card-left"><div class="card-icon">💰</div><div class="card-title">TM — Ticket Médio</div></div>
+          <span class="card-badge badge-high">Peso 30%</span>
+        </div>
+        <div style="margin-top:20px; border-top:1px solid rgba(255,255,255,0.06); padding-top:20px;">
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px;">
+            <div>
+              <label class="input-label">TM médio nos 60 dias (R$)</label>
+              <input class="dec-input" id="d2-tm-real" type="number" min="0" step="1" placeholder="Ex: 380" oninput="calcDecision2()">
+            </div>
+            <div>
+              <label class="input-label">Meta de TM da loja (R$)</label>
+              <input class="dec-input" id="d2-tm-meta" type="number" min="0" step="1" placeholder="Ex: 450" oninput="calcDecision2()">
+            </div>
+          </div>
+          <div class="dec-feedback" id="fb2-tm">—</div>
+          <div class="info-box" style="margin-top:12px; padding:12px 16px;">
+            <strong>Referência:</strong> ≥ 100% da meta = Excelente · 80–99% = Bom · 60–79% = Atenção · &lt; 60% = Abaixo do esperado
+          </div>
+        </div>
+      </div>
+
+      <!-- COMPORTAMENTO 60d -->
+      <div class="card" style="cursor:default; margin-bottom:14px;">
+        <div class="card-header">
+          <div class="card-left"><div class="card-icon">🤝</div><div class="card-title">Avaliação Comportamental — 60 dias</div></div>
+          <span class="card-badge badge-med">Peso 15%</span>
+        </div>
+        <div style="margin-top:20px; border-top:1px solid rgba(255,255,255,0.06); padding-top:20px;">
+          <p style="font-size:12px; color:var(--text-muted); margin-bottom:16px; line-height:1.6;">Avaliação comportamental acumulada dos 60 dias — inclui iniciativa e proatividade como indicador de maturidade.</p>
+          <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:18px;">
+            <div class="comp-row">
+              <div class="comp-label">Postura e atitude com a equipe</div>
+              <div class="comp-btns">
+                <button class="cbtn" onclick="setComp2('postura',0,this)">😞 Ruim</button>
+                <button class="cbtn" onclick="setComp2('postura',1,this)">😐 Regular</button>
+                <button class="cbtn" onclick="setComp2('postura',2,this)">✅ Bom</button>
+                <button class="cbtn" onclick="setComp2('postura',3,this)">⭐ Ótimo</button>
+              </div>
+            </div>
+            <div class="comp-row">
+              <div class="comp-label">Disciplina e cumprimento de regras</div>
+              <div class="comp-btns">
+                <button class="cbtn" onclick="setComp2('disciplina',0,this)">😞 Ruim</button>
+                <button class="cbtn" onclick="setComp2('disciplina',1,this)">😐 Regular</button>
+                <button class="cbtn" onclick="setComp2('disciplina',2,this)">✅ Bom</button>
+                <button class="cbtn" onclick="setComp2('disciplina',3,this)">⭐ Ótimo</button>
+              </div>
+            </div>
+            <div class="comp-row">
+              <div class="comp-label">Relacionamento com clientes</div>
+              <div class="comp-btns">
+                <button class="cbtn" onclick="setComp2('cliente',0,this)">😞 Ruim</button>
+                <button class="cbtn" onclick="setComp2('cliente',1,this)">😐 Regular</button>
+                <button class="cbtn" onclick="setComp2('cliente',2,this)">✅ Bom</button>
+                <button class="cbtn" onclick="setComp2('cliente',3,this)">⭐ Ótimo</button>
+              </div>
+            </div>
+            <div class="comp-row">
+              <div class="comp-label">Iniciativa e proatividade</div>
+              <div class="comp-btns">
+                <button class="cbtn" onclick="setComp2('iniciativa',0,this)">😞 Ruim</button>
+                <button class="cbtn" onclick="setComp2('iniciativa',1,this)">😐 Regular</button>
+                <button class="cbtn" onclick="setComp2('iniciativa',2,this)">✅ Bom</button>
+                <button class="cbtn" onclick="setComp2('iniciativa',3,this)">⭐ Ótimo</button>
+              </div>
+            </div>
+          </div>
+          <div class="dec-feedback" id="fb2-comp">—</div>
+        </div>
+      </div>
+
+      <!-- REGISTRO 60d -->
+      <div class="section-title">Registro da decisão — 60 dias</div>
+      <div class="card" style="cursor:default;">
+        <div style="display:flex; flex-direction:column; gap:14px;">
+          <div>
+            <label class="input-label">Nome do colaborador(a)</label>
+            <input class="dec-input" id="d2-nome" type="text" placeholder="Ex: Maria Silva" style="width:100%;">
+          </div>
+          <div>
+            <label class="input-label">Loja / Unidade</label>
+            <input class="dec-input" id="d2-loja" type="text" placeholder="Ex: BEL 3" style="width:100%;">
+          </div>
+          <div>
+            <label class="input-label">Observações da gerente (opcional)</label>
+            <textarea class="dec-input" id="d2-obs" rows="3" placeholder="Pontos que justificam a decisão, contexto adicional..." style="width:100%;"></textarea>
+          </div>
+          <button class="upload-btn" onclick="gerarResumo2()" style="width:100%; padding:14px; font-size:13px; letter-spacing:0.05em;">
+            📋 Gerar Resumo — 60 dias
+          </button>
+        </div>
+      </div>
+      <div id="dec2-resumo" style="display:none; margin-top:20px;">
+        <div class="section-title">Resumo para registro — 60 dias</div>
+        <div class="template-box" id="dec2-resumo-text" style="font-size:13px; line-height:1.9;">—</div>
+        <button class="copy-btn" style="position:relative; top:auto; right:auto; display:block; margin-top:10px;" onclick="copyResumo2()">Copiar Resumo</button>
+      </div>
+
+    </div><!-- fim stage-1 -->
+
+  </div>
+
+  <footer class="footer">First Class Home · Belém & Ananindeua · Contratação 2026</footer>
+
+</div>
+
+<script>
+  // ---- PDF.js config ----
+  if (typeof pdfjsLib !== 'undefined') {
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  }
+
+  // ---- TABS ----
+  function switchTab(idx) {
+    document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', i===idx));
+    document.querySelectorAll('.panel').forEach((p,i) => p.classList.toggle('active', i===idx));
+  }
+
+  // ---- CARD TOGGLE ----
+  function toggle(card) {
+    if (card.style.cursor === 'default') return;
+    var was = card.classList.contains('active');
+    card.closest('.panel').querySelectorAll('.card').forEach(c => c.classList.remove('active'));
+    if (!was) card.classList.add('active');
+  }
+
+  // ---- CHECKLIST ----
+  function toggleCheck(item, group) {
+    item.classList.toggle('checked');
+    updateProgress(group);
+  }
+  function updateProgress(group) {
+    if (group === 'aval') {
+      var all  = document.querySelectorAll('#checklist-aval .checklist-item');
+      var done = document.querySelectorAll('#checklist-aval .checklist-item.checked');
+      var pct  = (done.length / all.length) * 100;
+      document.getElementById('avalFill').style.width  = pct + '%';
+      document.getElementById('avalCount').textContent = done.length + ' / ' + all.length;
+    }
+  }
+
+  // ---- COPY TEMPLATE ----
+  function copyTemplate(e, btn) {
+    e.stopPropagation();
+    var text = btn.parentElement.innerText.replace('Copiar','').trim();
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(function() {
+          btn.textContent = 'Copiado!';
+          setTimeout(function() { btn.textContent = 'Copiar'; }, 2000);
+        }).catch(function() { fallbackCopy(text, btn); });
+      } else { fallbackCopy(text, btn); }
+    } catch(err) { fallbackCopy(text, btn); }
+  }
+  function fallbackCopy(text, btn) {
+    var ta = document.createElement('textarea');
+    ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.focus(); ta.select();
+    try { document.execCommand('copy'); btn.textContent = 'Copiado!'; }
+    catch(e) { btn.textContent = 'Erro'; }
+    document.body.removeChild(ta);
+    setTimeout(function() { btn.textContent = 'Copiar'; }, 2000);
+  }
+
+  // ---- INTERVIEW SCORING ----
+  var interviewScores = { exp: null, com: null, res: null, mot: null, ali: null };
+  function setScore(block, val, btn, e) {
+    if (e) e.stopPropagation();
+    interviewScores[block] = val;
+    document.querySelectorAll('#ss-' + block + ' .sbtn').forEach(b => b.classList.remove('sel-0','sel-1','sel-2'));
+    btn.classList.add('sel-' + val);
+    var bbEl = document.getElementById('bb-' + block);
+    var bvEl = document.getElementById('bv-' + block);
+    if (bbEl && bvEl) { bbEl.classList.remove('b-0','b-1','b-2'); bbEl.classList.add('b-' + val); bvEl.textContent = val; }
+    updateInterviewScore();
+  }
+  function updateInterviewScore() {
+    var total = 0; var counted = 0;
+    var keys = Object.keys(interviewScores);
+    for (var ki = 0; ki < keys.length; ki++) {
+      var v = interviewScores[keys[ki]];
+      if (v !== null) { total += v; counted++; }
+    }
+    var pct = (total / 10) * 100;
+    document.getElementById('board-fill').style.width = pct + '%';
+    document.getElementById('board-total-text').textContent = total + ' / 10 pontos (' + counted + '/5 blocos)';
+    var recBox = document.getElementById('rec-box');
+    if (counted < 5) {
+      recBox.className = 'rec-box rec-pending';
+      recBox.innerHTML = '⏳ ' + counted + '/5 blocos avaliados — continue para ver a recomendação';
+    } else if (total >= 8) {
+      recBox.className = 'rec-box rec-green';
+      recBox.innerHTML = '✅ <strong>Perfil forte</strong> — Recomendado para contratação (score: ' + total + '/10)';
+    } else if (total >= 5) {
+      recBox.className = 'rec-box rec-yellow';
+      recBox.innerHTML = '⚡ <strong>Perfil médio</strong> — Avaliar com cautela antes de contratar (score: ' + total + '/10)';
+    } else {
+      recBox.className = 'rec-box rec-red';
+      recBox.innerHTML = '❌ <strong>Perfil abaixo do esperado</strong> — Não avançar no processo (score: ' + total + '/10)';
+    }
+  }
+
+  // ---- TRACKER ----
+  function toggleTracker(item) {
+    item.classList.toggle('done');
+    updateTracker();
+  }
+  function updateTracker() {
+    var all  = document.querySelectorAll('#trackerGrid .t-item');
+    var done = document.querySelectorAll('#trackerGrid .t-item.done');
+    var pct  = Math.round((done.length / all.length) * 100);
+    document.getElementById('trackerPct').textContent = pct + '%';
+    document.getElementById('trackerFill').style.width = pct + '%';
+  }
+  function resetTracker() {
+    document.querySelectorAll('#trackerGrid .t-item').forEach(function(item) {
+      item.classList.remove('done');
+    });
+    updateTracker();
+  }
+
+  // ---- PDF CV ANALYSIS ----
+  var DROP_ZONE  = document.getElementById('uploadZone');
+  var FILE_INPUT = document.getElementById('fileInput');
+  var CV_RESULT  = document.getElementById('cvResult');
+  var CV_LOADING = document.getElementById('cvLoading');
+  var CV_ERROR   = document.getElementById('cvError');
+
+  function onDragOver(e)  { e.preventDefault(); DROP_ZONE.classList.add('drag-over'); }
+  function onDragLeave(e) { DROP_ZONE.classList.remove('drag-over'); }
+  function onDrop(e) {
+    e.preventDefault(); DROP_ZONE.classList.remove('drag-over');
+    var files = e.dataTransfer.files;
+    if (files.length > 0) processPDF(files[0]);
+  }
+  function handleFile(e) {
+    var files = e.target.files;
+    if (files.length > 0) processPDF(files[0]);
+    e.target.value = '';
+  }
+
+  function processPDF(file) {
+    CV_ERROR.classList.remove('visible');
+    CV_RESULT.classList.remove('visible');
+
+    if (!file.type.includes('pdf') && !file.name.toLowerCase().endsWith('.pdf')) {
+      showError('Apenas arquivos PDF são aceitos. Selecione um arquivo .pdf e tente novamente.');
+      return;
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      showError('Arquivo muito grande (máximo 10 MB). Reduza o PDF e tente novamente.');
+      return;
+    }
+    if (typeof pdfjsLib === 'undefined') {
+      showError('Não foi possível carregar o leitor de PDF. Verifique sua conexão com a internet e recarregue a página.');
+      return;
+    }
+
+    CV_LOADING.classList.add('visible');
+    DROP_ZONE.style.display = 'none';
+
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      var typedArray = new Uint8Array(e.target.result);
+      pdfjsLib.getDocument({ data: typedArray }).promise.then(function(pdf) {
+        var pages = [];
+        var pagePromises = [];
+        for (var i = 1; i <= Math.min(pdf.numPages, 5); i++) {
+          pagePromises.push(pdf.getPage(i).then(function(page) {
+            return page.getTextContent().then(function(tc) {
+              return tc.items.map(function(item) { return item.str; }).join(' ');
+            });
+          }));
+        }
+        return Promise.all(pagePromises);
+      }).then(function(pageTexts) {
+        var fullText = pageTexts.join(' ');
+        analyzeCV(fullText, file.name);
+      }).catch(function(err) {
+        CV_LOADING.classList.remove('visible');
+        DROP_ZONE.style.display = '';
+        showError('Não foi possível ler o PDF. Certifique-se de que o arquivo não está protegido por senha e tente novamente.');
+      });
+    };
+    reader.readAsArrayBuffer(file);
+  }
+
+  function analyzeCV(text, fileName) {
+    CV_LOADING.classList.remove('visible');
+    var t = text.toLowerCase();
+
+    // --- SCORE SYSTEM ---
+    var score = 0;
+    var findings = [];
+
+    // +2: Experiência em vendas / atendimento
+    var salesKw = ['vendas', 'vendedor', 'vendedora', 'atendimento', 'atendente', 'venda', 'comercial', 'consultor', 'negociação', 'clientes', 'balcão'];
+    var hasSales = salesKw.some(function(k) { return t.includes(k); });
+    if (hasSales) {
+      score += 2;
+      findings.push({ label:'Experiência em vendas', value:'✅ Encontrada (+2 pts)', cls:'pos' });
+    } else {
+      findings.push({ label:'Experiência em vendas', value:'⚠️ Não identificada', cls:'neu' });
+    }
+
+    // +1: Varejo (roupas, casa, decoração, moda)
+    var retailKw = ['varejo', 'loja', 'cama', 'mesa', 'banho', 'têxtil', 'confecção', 'moda', 'roupa', 'decoração', 'casa', 'moda casa', 'utilidades', 'enxoval'];
+    var hasRetail = retailKw.some(function(k) { return t.includes(k); });
+    if (hasRetail) {
+      score += 1;
+      findings.push({ label:'Varejo / segmento', value:'✅ Identificado (+1 pt)', cls:'pos' });
+    } else {
+      findings.push({ label:'Varejo / segmento', value:'— Não identificado', cls:'neu' });
+    }
+
+    // +2: Estabilidade (pelo menos 1 vínculo com 1+ ano — detecção por padrão ano-ano)
+    var yearRanges = (t.match(/\b(20\d{2})\s*[\-–—\/]\s*(20\d{2}|atual|presente)/g) || []);
+    var hasLongTenure = yearRanges.some(function(r) {
+      var nums = r.match(/20\d{2}/g);
+      if (nums && nums.length >= 2) {
+        return (parseInt(nums[1]) - parseInt(nums[0])) >= 1;
+      }
+      return r.includes('atual') || r.includes('presente');
+    });
+    if (hasLongTenure) {
+      score += 2;
+      findings.push({ label:'Estabilidade (1+ ano)', value:'✅ Detectada (+2 pts)', cls:'pos' });
+    } else {
+      findings.push({ label:'Estabilidade (1+ ano)', value:'⚠️ Não detectada', cls:'neu' });
+    }
+
+    // +1: Histórico estável — penalizar se muitos empregos curtos
+    var allYears = (t.match(/\b20\d{2}\b/g) || []).map(Number);
+    var uniqueYears = allYears.filter(function(v, i, a) { return a.indexOf(v) === i; }).sort(function(a,b){return a-b;});
+    var jobChanges = uniqueYears.length > 2 ? Math.floor(uniqueYears.length / 2) : 0;
+    if (jobChanges > 3) {
+      score -= 2;
+      findings.push({ label:'Rotatividade', value:'🚨 Alto número de trocas (−2 pts)', cls:'neg' });
+    } else {
+      score += 1;
+      findings.push({ label:'Histórico de emprego', value:'✅ Aparentemente estável (+1 pt)', cls:'pos' });
+    }
+
+    // +1: Idade 30+ (by birth year or explicit mention)
+    var hasAge = /\b3[0-9]\s*anos|\b[45][0-9]\s*anos|nascimento[:\s]+\d{2}\/\d{2}\/(19[6-9]\d|200[0-6])/.test(t);
+    var birthYear = t.match(/\b(19[6-9]\d|200[0-6])\b/);
+    if (!hasAge && birthYear) {
+      var age = 2026 - parseInt(birthYear[1]);
+      if (age >= 30) hasAge = true;
+    }
+    if (hasAge) {
+      score += 1;
+      findings.push({ label:'Perfil de idade (30+)', value:'✅ Identificado (+1 pt)', cls:'pos' });
+    } else {
+      findings.push({ label:'Perfil de idade (30+)', value:'— Não identificado', cls:'neu' });
+    }
+
+    // Lacuna sem trabalho — simplificado: detectar se há mais de 1 ano entre empregos
+    // (difficult to reliably detect purely from text, so we skip advanced check)
+
+    // Clamp score
+    var finalScore = Math.max(0, Math.min(7, score));
+
+    // --- KEYWORDS FOUND ---
+    var allKw = salesKw.concat(retailKw).concat(['pontual', 'assiduidade', 'metas', 'resultado', 'equipe', 'proativo', 'responsável', 'organizado', 'comunicação', 'liderança', 'clt', 'cnpj', 'salário']);
+    var foundKw = allKw.filter(function(k) { return t.includes(k); });
+    var warnKw  = ['desempregado', 'demitido', 'rescisão', 'conflito', 'problema', 'atraso'];
+    var foundWarn = warnKw.filter(function(k) { return t.includes(k); });
+
+    // --- VERDICT ---
+    var verdict, verdictCls, recText, fillColor;
+    if (finalScore >= 5) {
+      verdict = '✅ Chamar para triagem'; verdictCls = 'verdict-green';
+      recText = '<strong>📞 Recomendação:</strong> Perfil com boa aderência. Envie a mensagem de triagem via WhatsApp para confirmar disponibilidade aos sábados e pretensão salarial antes de agendar entrevista.';
+      fillColor = 'var(--green)';
+    } else if (finalScore >= 3) {
+      verdict = '⚡ Avaliar com cautela'; verdictCls = 'verdict-yellow';
+      recText = '<strong>⚡ Recomendação:</strong> Perfil mediano. Chamar apenas se não houver candidatos com pontuação mais alta. Confirmar experiência em vendas na triagem antes de agendar entrevista.';
+      fillColor = '#FFC850';
+    } else {
+      verdict = '❌ Não avançar agora'; verdictCls = 'verdict-red';
+      recText = '<strong>❌ Recomendação:</strong> Perfil com baixa aderência para o momento. Guardar no banco de talentos para futura reavaliação.';
+      fillColor = '#F08080';
+    }
+
+    // --- RENDER ---
+    var cleanName = fileName.replace(/\.pdf$/i, '');
+    document.getElementById('cvFileName').textContent = cleanName.length > 40 ? cleanName.substring(0,40)+'…' : cleanName;
+    document.getElementById('cvVerdict').textContent   = verdict;
+    document.getElementById('cvVerdict').className     = 'cv-verdict ' + verdictCls;
+    document.getElementById('cvScoreNum').textContent  = finalScore;
+    var fillPct = Math.round((finalScore / 7) * 100);
+    document.getElementById('cvFill').style.width      = fillPct + '%';
+    document.getElementById('cvFill').style.background = fillColor;
+
+    var findHtml = '';
+    findings.forEach(function(f) {
+      findHtml += '<div class="cv-finding"><div class="cv-finding-label">' + f.label + '</div><div class="cv-finding-value ' + f.cls + '">' + f.value + '</div></div>';
+    });
+    document.getElementById('cvFindings').innerHTML = findHtml;
+
+    var kwHtml = '';
+    var uniqueKw = foundKw.filter(function(v,i,a){return a.indexOf(v)===i;}).slice(0,14);
+    uniqueKw.forEach(function(k) { kwHtml += '<span class="kw-tag">' + k + '</span>'; });
+    foundWarn.forEach(function(k) { kwHtml += '<span class="kw-tag red">⚠️ ' + k + '</span>'; });
+    document.getElementById('cvKeywordTags').innerHTML = kwHtml || '<span style="color:var(--text-muted); font-size:12px;">Nenhuma palavra-chave relevante encontrada</span>';
+    document.getElementById('cvRec').innerHTML = recText;
+
+    CV_RESULT.classList.add('visible');
+  }
+
+  function showError(msg) {
+    CV_ERROR.textContent = '⚠️ ' + msg;
+    CV_ERROR.classList.add('visible');
+    DROP_ZONE.style.display = '';
+  }
+
+  function resetCV() {
+    CV_RESULT.classList.remove('visible');
+    CV_ERROR.classList.remove('visible');
+    DROP_ZONE.style.display = '';
+  }
+
+  // ---- INIT ----
+  updateProgress('aval');
+  updateTracker();
+
+  // ======== DECISÃO PE — DOIS ESTÁGIOS ========
+
+  // ---- Navegação entre estágios ----
+  function switchStage(idx) {
+    document.querySelectorAll('.stage-btn').forEach(function(b,i) { b.classList.toggle('active', i===idx); });
+    document.querySelectorAll('.stage-panel').forEach(function(p,i) { p.classList.toggle('active', i===idx); });
+  }
+
+  // -------- ESTÁGIO 1: 30 DIAS --------
+  var compScores1 = { postura: null, disciplina: null, cliente: null, aprendizado: null };
+
+  function setComp1(dim, val, btn) {
+    compScores1[dim] = val;
+    btn.closest('.comp-btns').querySelectorAll('.cbtn').forEach(function(b) {
+      b.classList.remove('cbtn-sel-0','cbtn-sel-1','cbtn-sel-2','cbtn-sel-3');
+    });
+    btn.classList.add('cbtn-sel-' + val);
+    calcDecision1();
+  }
+
+  function calcDecision1() {
+    var diasTrab  = parseFloat(document.getElementById('d1-dias-trab').value)  || 0;
+    var diasUteis = parseFloat(document.getElementById('d1-dias-uteis').value) || 0;
+    var hasAss  = diasTrab > 0 && diasUteis > 0;
+    var hasComp = compScores1.postura !== null && compScores1.disciplina !== null &&
+                  compScores1.cliente !== null && compScores1.aprendizado !== null;
+
+    // Assiduidade
+    var assScore = 0; var assPct = 0;
+    if (hasAss) {
+      assPct = (diasTrab / diasUteis) * 100;
+      if      (assPct >= 95) assScore = 100;
+      else if (assPct >= 90) assScore = 80;
+      else if (assPct >= 85) assScore = 55;
+      else                   assScore = 0;
+    }
+    var fbAss = document.getElementById('fb1-ass');
+    var dbbAss = document.getElementById('dbb1-ass'); var dbvAss = document.getElementById('dbv1-ass');
+    if (hasAss) {
+      var al = assPct >= 95 ? '✅ Excelente' : assPct >= 90 ? '✅ Bom' : assPct >= 85 ? '⚠️ Atenção' : '🚨 Veto automático';
+      fbAss.textContent = assPct.toFixed(1) + '% de presença · ' + al;
+      fbAss.style.color = assPct >= 90 ? 'var(--green)' : assPct >= 85 ? '#FFC850' : '#F08080';
+      dbvAss.textContent = Math.round(assPct) + '%';
+      dbbAss.classList.remove('b-0','b-1','b-2');
+      dbbAss.classList.add(assPct >= 90 ? 'b-2' : assPct >= 85 ? 'b-1' : 'b-0');
+    } else { fbAss.textContent = '—'; fbAss.style.color = ''; dbvAss.textContent = '–'; dbbAss.classList.remove('b-0','b-1','b-2'); }
+
+    // Comportamento
+    var compScore1 = 0;
+    var fbComp = document.getElementById('fb1-comp');
+    var dbbComp = document.getElementById('dbb1-comp'); var dbvComp = document.getElementById('dbv1-comp');
+    if (hasComp) {
+      var ct = compScores1.postura + compScores1.disciplina + compScores1.cliente + compScores1.aprendizado;
+      compScore1 = Math.round((ct / 12) * 100);
+      var cl = compScore1 >= 80 ? '✅ Excelente' : compScore1 >= 60 ? '✅ Bom' : compScore1 >= 35 ? '⚠️ Regular' : '❌ Abaixo';
+      fbComp.textContent = compScore1 + ' pts (de 100) · ' + cl;
+      fbComp.style.color = compScore1 >= 60 ? 'var(--green)' : compScore1 >= 35 ? '#FFC850' : '#F08080';
+      dbvComp.textContent = compScore1;
+      dbbComp.classList.remove('b-0','b-1','b-2');
+      dbbComp.classList.add(compScore1 >= 67 ? 'b-2' : compScore1 >= 33 ? 'b-1' : 'b-0');
+    } else { fbComp.textContent = '—'; fbComp.style.color = ''; dbvComp.textContent = '–'; dbbComp.classList.remove('b-0','b-1','b-2'); }
+
+    // Score final
+    var recEl = document.getElementById('dec1-rec');
+    var totalEl = document.getElementById('dec1-total-text');
+    var fillEl  = document.getElementById('dec1-fill');
+    if (!hasAss || !hasComp) {
+      totalEl.textContent = 'Preencha todos os campos';
+      fillEl.style.width = '0%'; recEl.className = 'rec-box rec-pending';
+      recEl.innerHTML = '⏳ Preencha todos os campos para ver a recomendação'; return;
+    }
+    if (assPct < 85) {
+      totalEl.textContent = 'Score: 0 — Veto por assiduidade'; fillEl.style.width = '0%';
+      recEl.className = 'rec-box rec-red';
+      recEl.innerHTML = '🚫 <strong>Não Renovar</strong> — Assiduidade abaixo de 85% é critério eliminatório.'; return;
+    }
+    var fs1 = Math.max(0, Math.min(100, Math.round(assScore * 0.40 + compScore1 * 0.60)));
+    totalEl.textContent = 'Score: ' + fs1 + ' / 100';
+    fillEl.style.width = fs1 + '%';
+    if (fs1 >= 65) {
+      recEl.className = 'rec-box rec-green';
+      recEl.innerHTML = '✅ <strong>Renovar por mais 30 dias</strong> — Bom desempenho no 1° período. Seguir para avaliação final. (Score: ' + fs1 + '/100)';
+    } else if (fs1 >= 45) {
+      recEl.className = 'rec-box rec-yellow';
+      recEl.innerHTML = '⚡ <strong>Renovar com alerta</strong> — Desempenho mediano. Renovar com feedback claro e acompanhamento intensificado no 2° mês. (Score: ' + fs1 + '/100)';
+    } else {
+      recEl.className = 'rec-box rec-red';
+      recEl.innerHTML = '❌ <strong>Não Renovar</strong> — Desempenho abaixo do esperado no 1° período. Recomendado encerrar o contrato. (Score: ' + fs1 + '/100)';
+    }
+  }
+
+  function gerarResumo1() {
+    var nome = document.getElementById('d1-nome').value.trim() || '—';
+    var loja = document.getElementById('d1-loja').value.trim() || '—';
+    var obs  = document.getElementById('d1-obs').value.trim();
+    var decRec = document.getElementById('dec1-rec').innerText.replace(/\n/g,' ') || '—';
+    var total  = document.getElementById('dec1-total-text').textContent || '—';
+    var dt = document.getElementById('d1-dias-trab').value || '—';
+    var du = document.getElementById('d1-dias-uteis').value || '—';
+    function pct(a,b) { var fa=parseFloat(a),fb=parseFloat(b); return(!isNaN(fa)&&!isNaN(fb)&&fb>0)?(fa/fb*100).toFixed(1)+'%':'—'; }
+    var lbs = { postura:'Postura', disciplina:'Disciplina', cliente:'Relacionamento c/ cliente', aprendizado:'Aprendizado e adaptação' };
+    var vs  = ['Ruim','Regular','Bom','Ótimo'];
+    var cl  = Object.keys(compScores1).map(function(k){ return '  · ' + lbs[k] + ': ' + (compScores1[k]!==null?vs[compScores1[k]]:'—'); }).join('\n');
+    var d = new Date(); var ds = d.getDate().toString().padStart(2,'0')+'/'+(d.getMonth()+1).toString().padStart(2,'0')+'/'+d.getFullYear();
+    var linhas = ['=== AVALIAÇÃO 30 DIAS — FIRST CLASS HOME ===','Data: '+ds,'Colaborador(a): '+nome,'Loja / Unidade: '+loja,'','--- DESEMPENHO 1° MÊS ---','Assiduidade: '+dt+'/'+du+' dias úteis ('+pct(dt,du)+')','','--- AVALIAÇÃO COMPORTAMENTAL ---',cl,'','--- RESULTADO ---',total,'RECOMENDAÇÃO: '+decRec];
+    if (obs) { linhas.push(''); linhas.push('--- OBSERVAÇÕES ---'); linhas.push(obs); }
+    linhas.push(''); linhas.push('Assinatura do gestor(a): ___________________________  Data: '+ds);
+    document.getElementById('dec1-resumo-text').textContent = linhas.join('\n');
+    var rd = document.getElementById('dec1-resumo'); rd.style.display = 'block';
+    setTimeout(function(){ rd.scrollIntoView({behavior:'smooth',block:'nearest'}); }, 50);
+  }
+
+  function copyResumo1() {
+    var text = document.getElementById('dec1-resumo-text').textContent;
+    var btn  = document.querySelector('[onclick="copyResumo1()"]');
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(function(){ btn.textContent='✓ Copiado!'; setTimeout(function(){ btn.textContent='Copiar Resumo'; },2500); }).catch(function(){ fallbackCopy(text,btn); });
+      } else { fallbackCopy(text,btn); }
+    } catch(e) { fallbackCopy(text,btn); }
+  }
+
+  // -------- ESTÁGIO 2: 60 DIAS --------
+  var compScores2 = { postura: null, disciplina: null, cliente: null, iniciativa: null };
+
+  // -------- ESTÁGIO 2: 60 DIAS — JS --------
+  function setComp2(dim, val, btn) {
+    compScores2[dim] = val;
+    var allBtns = btn.closest('.comp-btns').querySelectorAll('.cbtn');
+    allBtns.forEach(function(b) {
+      b.classList.remove('cbtn-sel-0','cbtn-sel-1','cbtn-sel-2','cbtn-sel-3');
+    });
+    btn.classList.add('cbtn-sel-' + val);
+    calcDecision2();
+  }
+
+  function calcDecision2() {
+    var diasTrab  = parseFloat(document.getElementById('d2-dias-trab').value)  || 0;
+    var diasUteis = parseFloat(document.getElementById('d2-dias-uteis').value) || 0;
+    var paReal    = parseFloat(document.getElementById('d2-pa-real').value)    || 0;
+    var paMeta    = parseFloat(document.getElementById('d2-pa-meta').value)    || 0;
+    var tmReal    = parseFloat(document.getElementById('d2-tm-real').value)    || 0;
+    var tmMeta    = parseFloat(document.getElementById('d2-tm-meta').value)    || 0;
+
+    var hasAss  = diasTrab > 0 && diasUteis > 0;
+    var hasPA   = paReal > 0 && paMeta > 0;
+    var hasTM   = tmReal > 0 && tmMeta > 0;
+    var hasComp = compScores2.postura !== null && compScores2.disciplina !== null &&
+                  compScores2.cliente !== null && compScores2.iniciativa !== null;
+
+    // ---- ASSIDUIDADE ----
+    var assScore = 0; var assPct = 0;
+    if (hasAss) {
+      assPct = (diasTrab / diasUteis) * 100;
+      if      (assPct >= 95) assScore = 100;
+      else if (assPct >= 90) assScore = 80;
+      else if (assPct >= 85) assScore = 55;
+      else                   assScore = 0;
+    }
+    var fbAss  = document.getElementById('fb2-ass');
+    var dbbAss = document.getElementById('dbb2-ass');
+    var dbvAss = document.getElementById('dbv2-ass');
+    if (hasAss) {
+      var assLbl = assPct >= 95 ? '✅ Excelente' : assPct >= 90 ? '✅ Bom' : assPct >= 85 ? '⚠️ Atenção' : '🚨 Crítico — veto automático';
+      fbAss.textContent = assPct.toFixed(1) + '% de presença · ' + assLbl;
+      fbAss.style.color = assPct >= 90 ? 'var(--green)' : assPct >= 85 ? '#FFC850' : '#F08080';
+      dbvAss.textContent = Math.round(assPct) + '%';
+      dbbAss.classList.remove('b-0','b-1','b-2');
+      dbbAss.classList.add(assPct >= 90 ? 'b-2' : assPct >= 85 ? 'b-1' : 'b-0');
+    } else {
+      fbAss.textContent = '—'; fbAss.style.color = '';
+      dbvAss.textContent = '–'; dbbAss.classList.remove('b-0','b-1','b-2');
+    }
+
+    // ---- PA ----
+    var paScore = 0; var paPct = 0;
+    if (hasPA) {
+      paPct = (paReal / paMeta) * 100;
+      if      (paPct >= 100) paScore = 100;
+      else if (paPct >= 80)  paScore = 70 + (paPct - 80) * 1.5;
+      else if (paPct >= 60)  paScore = 40 + (paPct - 60) * 1.5;
+      else                   paScore = Math.max(0, paPct * 0.67);
+    }
+    var fbPA  = document.getElementById('fb2-pa');
+    var dbbPA = document.getElementById('dbb2-pa');
+    var dbvPA = document.getElementById('dbv2-pa');
+    if (hasPA) {
+      var paLbl = paPct >= 100 ? '✅ Excelente' : paPct >= 80 ? '✅ Bom' : paPct >= 60 ? '⚠️ Atenção' : '❌ Abaixo do esperado';
+      fbPA.textContent = paPct.toFixed(1) + '% da meta · ' + paLbl;
+      fbPA.style.color = paPct >= 80 ? 'var(--green)' : paPct >= 60 ? '#FFC850' : '#F08080';
+      dbvPA.textContent = Math.round(paPct) + '%';
+      dbbPA.classList.remove('b-0','b-1','b-2');
+      dbbPA.classList.add(paPct >= 80 ? 'b-2' : paPct >= 60 ? 'b-1' : 'b-0');
+    } else {
+      fbPA.textContent = '—'; fbPA.style.color = '';
+      dbvPA.textContent = '–'; dbbPA.classList.remove('b-0','b-1','b-2');
+    }
+
+    // ---- TM ----
+    var tmScore = 0; var tmPct = 0;
+    if (hasTM) {
+      tmPct = (tmReal / tmMeta) * 100;
+      if      (tmPct >= 100) tmScore = 100;
+      else if (tmPct >= 80)  tmScore = 70 + (tmPct - 80) * 1.5;
+      else if (tmPct >= 60)  tmScore = 40 + (tmPct - 60) * 1.5;
+      else                   tmScore = Math.max(0, tmPct * 0.67);
+    }
+    var fbTM  = document.getElementById('fb2-tm');
+    var dbbTM = document.getElementById('dbb2-tm');
+    var dbvTM = document.getElementById('dbv2-tm');
+    if (hasTM) {
+      var tmLbl = tmPct >= 100 ? '✅ Excelente' : tmPct >= 80 ? '✅ Bom' : tmPct >= 60 ? '⚠️ Atenção' : '❌ Abaixo do esperado';
+      fbTM.textContent = tmPct.toFixed(1) + '% da meta · ' + tmLbl + ' (R$' + tmReal.toFixed(0) + ' / R$' + tmMeta.toFixed(0) + ')';
+      fbTM.style.color = tmPct >= 80 ? 'var(--green)' : tmPct >= 60 ? '#FFC850' : '#F08080';
+      dbvTM.textContent = Math.round(tmPct) + '%';
+      dbbTM.classList.remove('b-0','b-1','b-2');
+      dbbTM.classList.add(tmPct >= 80 ? 'b-2' : tmPct >= 60 ? 'b-1' : 'b-0');
+    } else {
+      fbTM.textContent = '—'; fbTM.style.color = '';
+      dbvTM.textContent = '–'; dbbTM.classList.remove('b-0','b-1','b-2');
+    }
+
+    // ---- COMPORTAMENTO ----
+    var compScore = 0;
+    var fbComp  = document.getElementById('fb2-comp');
+    var dbbComp = document.getElementById('dbb2-comp');
+    var dbvComp = document.getElementById('dbv2-comp');
+    if (hasComp) {
+      var compTotal = compScores2.postura + compScores2.disciplina + compScores2.cliente + compScores2.iniciativa;
+      compScore = Math.round((compTotal / 12) * 100);
+      var compLbl = compScore >= 80 ? '✅ Excelente' : compScore >= 60 ? '✅ Bom' : compScore >= 35 ? '⚠️ Regular' : '❌ Abaixo';
+      fbComp.textContent = compScore + ' pts (de 100) · ' + compLbl;
+      fbComp.style.color = compScore >= 60 ? 'var(--green)' : compScore >= 35 ? '#FFC850' : '#F08080';
+      dbvComp.textContent = compScore;
+      dbbComp.classList.remove('b-0','b-1','b-2');
+      dbbComp.classList.add(compScore >= 67 ? 'b-2' : compScore >= 33 ? 'b-1' : 'b-0');
+    } else {
+      fbComp.textContent = '—'; fbComp.style.color = '';
+      dbvComp.textContent = '–'; dbbComp.classList.remove('b-0','b-1','b-2');
+    }
+
+    // ---- SCORE FINAL ----
+    var recEl   = document.getElementById('dec2-rec');
+    var totalEl = document.getElementById('dec2-total-text');
+    var fillEl  = document.getElementById('dec2-fill');
+
+    if (!hasAss || !hasPA || !hasTM || !hasComp) {
+      totalEl.textContent = 'Preencha todos os campos';
+      fillEl.style.width  = '0%';
+      recEl.className = 'rec-box rec-pending';
+      recEl.innerHTML = '⏳ Preencha todos os campos para ver a recomendação';
+      return;
+    }
+
+    // Veto automático: assiduidade < 85%
+    if (assPct < 85) {
+      totalEl.textContent = 'Score: 0 — Veto por assiduidade';
+      fillEl.style.width  = '0%';
+      recEl.className = 'rec-box rec-red';
+      recEl.innerHTML = '🚫 <strong>Não Efetivar</strong> — Assiduidade abaixo de 85% é critério eliminatório, independente da performance em PA, TM ou comportamento.';
+      return;
+    }
+
+    // Pesos: Ass 25% · PA 30% · TM 30% · Comp 15%
+    var finalScore = Math.round(assScore * 0.25 + paScore * 0.30 + tmScore * 0.30 + compScore * 0.15);
+    finalScore = Math.max(0, Math.min(100, finalScore));
+
+    totalEl.textContent = 'Score final: ' + finalScore + ' / 100';
+    fillEl.style.width  = finalScore + '%';
+
+    if (finalScore >= 75) {
+      recEl.className = 'rec-box rec-green';
+      recEl.innerHTML = '✅ <strong>Efetivar</strong> — Desempenho satisfatório nos 60 dias. Recomendado para contratação definitiva. (Score: ' + finalScore + '/100)';
+    } else if (finalScore >= 50) {
+      recEl.className = 'rec-box rec-yellow';
+      recEl.innerHTML = '⚡ <strong>Efetivar com ressalvas</strong> — Desempenho mediano. Efetivar com plano de melhoria estruturado e revisão em 30 dias. (Score: ' + finalScore + '/100)';
+    } else {
+      recEl.className = 'rec-box rec-red';
+      recEl.innerHTML = '❌ <strong>Não Efetivar</strong> — Desempenho abaixo do esperado nos 60 dias. Não recomendado para contratação definitiva. (Score: ' + finalScore + '/100)';
+    }
+  }
+
+  function gerarResumo2() {
+    var nome  = document.getElementById('d2-nome').value.trim() || '—';
+    var loja  = document.getElementById('d2-loja').value.trim() || '—';
+    var obs   = document.getElementById('d2-obs').value.trim();
+    var decRecEl = document.getElementById('dec2-rec');
+    var decRec   = decRecEl ? decRecEl.innerText.replace(/\n/g,' ') : '—';
+    var total    = document.getElementById('dec2-total-text').textContent || '—';
+
+    var diasTrab  = document.getElementById('d2-dias-trab').value  || '—';
+    var diasUteis = document.getElementById('d2-dias-uteis').value || '—';
+    var paReal    = document.getElementById('d2-pa-real').value    || '—';
+    var paMeta    = document.getElementById('d2-pa-meta').value    || '—';
+    var tmReal    = document.getElementById('d2-tm-real').value    || '—';
+    var tmMeta    = document.getElementById('d2-tm-meta').value    || '—';
+
+    function pct(a, b) {
+      var fa = parseFloat(a), fb = parseFloat(b);
+      return (!isNaN(fa) && !isNaN(fb) && fb > 0) ? (fa/fb*100).toFixed(1)+'%' : '—';
+    }
+
+    var compLbls = { postura:'Postura', disciplina:'Disciplina', cliente:'Relacionamento c/ cliente', iniciativa:'Iniciativa' };
+    var compVals = ['Ruim','Regular','Bom','Ótimo'];
+    var compLines = Object.keys(compScores2).map(function(k) {
+      return '  · ' + compLbls[k] + ': ' + (compScores2[k] !== null ? compVals[compScores2[k]] : '—');
+    }).join('\n');
+
+    var d = new Date();
+    var dataStr = d.getDate().toString().padStart(2,'0') + '/' + (d.getMonth()+1).toString().padStart(2,'0') + '/' + d.getFullYear();
+
+    var linhas = [
+      '=== 2ª AVALIAÇÃO — DECISÃO DE EFETIVAÇÃO — FIRST CLASS HOME ===',
+      'Data: ' + dataStr,
+      'Colaborador(a): ' + nome,
+      'Loja / Unidade: ' + loja,
+      '',
+      '--- DESEMPENHO NOS 60 DIAS ---',
+      'Assiduidade: ' + diasTrab + '/' + diasUteis + ' dias úteis (' + pct(diasTrab, diasUteis) + ')',
+      'PA — Real: ' + paReal + ' | Meta: ' + paMeta + ' (' + pct(paReal, paMeta) + ' da meta)',
+      'TM — Real: R$' + tmReal + ' | Meta: R$' + tmMeta + ' (' + pct(tmReal, tmMeta) + ' da meta)',
+      '',
+      '--- AVALIAÇÃO COMPORTAMENTAL ---',
+      compLines,
+      '',
+      '--- RESULTADO ---',
+      total,
+      'RECOMENDAÇÃO: ' + decRec,
+    ];
+    if (obs) { linhas.push(''); linhas.push('--- OBSERVAÇÕES DA GERENTE ---'); linhas.push(obs); }
+    linhas.push('');
+    linhas.push('Assinatura do gestor(a): ___________________________  Data: ' + dataStr);
+
+    document.getElementById('dec2-resumo-text').textContent = linhas.join('\n');
+    var resumoDiv = document.getElementById('dec2-resumo');
+    resumoDiv.style.display = 'block';
+    setTimeout(function() { resumoDiv.scrollIntoView({ behavior:'smooth', block:'nearest' }); }, 50);
+  }
+
+  function copyResumo2() {
+    var text = document.getElementById('dec2-resumo-text').textContent;
+    var btn  = document.querySelector('[onclick="copyResumo2()"]');
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(function() {
+          btn.textContent = '✓ Copiado!';
+          setTimeout(function() { btn.textContent = 'Copiar Resumo'; }, 2500);
+        }).catch(function() { fallbackCopy(text, btn); btn.textContent = 'Copiar Resumo'; });
+      } else { fallbackCopy(text, btn); }
+    } catch(e) { fallbackCopy(text, btn); }
+  }
+</script>
+</body>
+</html>
